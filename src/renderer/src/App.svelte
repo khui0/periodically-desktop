@@ -17,7 +17,7 @@
 
   let tasks: Task[] = [
     {
-      title: "calc:APCR",
+      title: "calc:ap classroom",
       timestamp: Date.now(),
     },
     {
@@ -85,7 +85,7 @@
     defer
     ><ol class="flex flex-col gap-2">
       {#each tasks as task}
-        {@const match = task.title.match(/^([A-z0-9]+):(.*)$/)}
+        {@const match = task.title.match(/^([A-z0-9]+):(.+)$/)}
         <li class="bg-base-200 hover:cursor-pointer p-3 rounded-box flex flex-row gap-2">
           <div class="flex flex-col gap-1 justify-center">
             <button class="btn btn-sm btn-square"><TablerCheck></TablerCheck></button>
