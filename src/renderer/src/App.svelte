@@ -26,6 +26,7 @@
     },
   ];
 
+  // Update clock
   let currentTime: string = getTime();
   setInterval(() => {
     currentTime = getTime();
@@ -33,18 +34,37 @@
 
   let title: string;
   let details: string;
-  let date: string = endOfToday();
+  let date: string;
+  resetInputs();
 
-  $: console.log(title, details, date);
-
+  let inputBar: HTMLInputElement;
   let createModal: Modal;
+  let createFocusTarget: HTMLInputElement;
 
-  function createTask(e: KeyboardEvent): void {
+  function resetInputs(): void {
+    title = "";
+    details = "";
+    date = endOfToday();
+  }
+
+  function showCreateModal(e: KeyboardEvent): void {
     if (e.key === "Enter") {
       e.preventDefault();
       createModal.showModal();
+      createFocusTarget.focus();
     }
   }
+
+  function createNewTask(): void {
+    console.log(title, details, date);
+  }
+
+  document.addEventListener("keydown", () => {
+    const hasModalOpen: boolean = Boolean(document.querySelector(`dialog[open]`));
+    if (!hasModalOpen && document.activeElement.tagName !== "input") {
+      inputBar.focus();
+    }
+  });
 </script>
 
 <main class="flex flex-col p-4 gap-2 justify-between h-full">
@@ -94,7 +114,8 @@
       class="input input-bordered input-sm w-full placeholder-neutral-500"
       placeholder="Create task"
       bind:value={title}
-      on:keydown={createTask}
+      bind:this={inputBar}
+      on:keydown={showCreateModal}
     />
     <div class="flex flex-row bg-base-200 rounded-full">
       <button class="btn btn-sm btn-circle"><TablerArchive></TablerArchive></button>
@@ -109,6 +130,7 @@
         placeholder="Title"
         class="input input-bordered placeholder-neutral-500"
         bind:value={title}
+        bind:this={createFocusTarget}
       />
       <textarea
         class="textarea textarea-bordered placeholder-neutral-500 resize-none w-full block"
@@ -121,7 +143,7 @@
         class="input input-bordered placeholder-neutral-500"
         bind:value={date}
       />
-      <button class="btn btn-primary btn-sm">Create</button>
+      <button class="btn btn-primary btn-sm" on:click={createNewTask}>Create</button>
     </div>
   </Modal>
 </main>
