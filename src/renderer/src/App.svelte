@@ -13,19 +13,16 @@
     title: string;
     details?: string;
     timestamp: number;
-    tag: string;
   }
 
   let tasks: Task[] = [
     {
-      title: "APCR",
+      title: "calc:APCR",
       timestamp: Date.now(),
-      tag: "calc",
     },
     {
       title: "This is a test task",
       timestamp: Date.now(),
-      tag: "calc",
     },
   ];
 
@@ -68,14 +65,19 @@
     defer
     ><ol class="flex flex-col gap-2">
       {#each tasks as task}
+        {@const match = task.title.match(/^([A-z0-9]+):(.*)$/)}
         <li class="bg-base-200 p-3 rounded-box flex flex-row gap-2">
           <div class="flex flex-col gap-1 justify-center">
             <button class="btn btn-sm btn-square"><TablerCheck></TablerCheck></button>
           </div>
           <div class="flex flex-col justify-evenly">
             <h2 class="text-xl">
-              <span class="badge badge-outline align-middle">{task.tag}</span>
-              {task.title}
+              {#if match}
+                <span class="badge badge-outline align-middle">{match[1]}</span>
+                {match[2]}
+              {:else}
+                {task.title}
+              {/if}
             </h2>
             {#if task.details}
               <p class="text-neutral-content">{task.details}</p>
@@ -90,7 +92,7 @@
     <input
       type="text"
       class="input input-bordered input-sm w-full placeholder-neutral-500"
-      placeholder="What's on your mind?"
+      placeholder="Create task"
       bind:value={title}
       on:keydown={createTask}
     />
