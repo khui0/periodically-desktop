@@ -3,7 +3,7 @@
   import Modal from "./components/Modal.svelte";
   import { endOfToday, getTime, timeToString } from "./lib/time";
 
-  import TablerPlus from "~icons/tabler/plus";
+  import TablerDots from "~icons/tabler/dots";
   import TablerArchive from "~icons/tabler/archive";
   import TablerShare2 from "~icons/tabler/share-2";
   import TablerSettings from "~icons/tabler/settings";
@@ -74,7 +74,7 @@
       <select class="select select-bordered select-sm max-w-xs">
         <option>Default</option>
       </select>
-      <button class="btn btn-sm btn-circle"><TablerPlus></TablerPlus></button>
+      <button class="btn btn-sm btn-circle"><TablerDots></TablerDots></button>
     </div>
     <p>{currentTime}</p>
   </div>
