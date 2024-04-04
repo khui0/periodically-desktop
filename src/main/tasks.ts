@@ -43,5 +43,8 @@ export function createTask(title: string, details: string, date: string): string
 }
 
 export function getTasks(): Task[] {
-  return store.get("tasks") as Task[];
+  const list = store.get("tasks") as Task[];
+  // Sort tasks by due date
+  list.sort((a, b) => (a.timestamp > b.timestamp ? 1 : b.timestamp > a.timestamp ? -1 : 0));
+  return list;
 }
