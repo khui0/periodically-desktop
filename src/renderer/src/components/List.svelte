@@ -1,8 +1,9 @@
 <script lang="ts">
   import { OverlayScrollbarsComponent } from "overlayscrollbars-svelte";
   import { timeToString } from "../lib/time";
-  import TablerCheck from "~icons/tabler/check";
   import { createEventDispatcher } from "svelte";
+
+  import TablerCheck from "~icons/tabler/check";
 
   interface Task {
     uuid: string;
@@ -14,10 +15,6 @@
   export let tasks: Task[];
 
   const dispatch = createEventDispatcher();
-
-  function deleteTask(uuid: string): void {
-    window.electron.ipcRenderer.send("task:delete", uuid);
-  }
 </script>
 
 <OverlayScrollbarsComponent
@@ -32,14 +29,14 @@
         class="bg-base-200 hover:cursor-pointer p-3 rounded-box flex flex-row gap-2"
         role="presentation"
         on:dblclick={() => {
-          dispatch("edit-task", task.uuid);
+          dispatch("edit", task.uuid);
         }}
       >
         <div class="flex flex-col gap-1 justify-center">
           <button
             class="btn btn-sm btn-square"
             on:click={() => {
-              deleteTask(task.uuid);
+              window.electron.ipcRenderer.send("task:delete", task.uuid);
             }}><TablerCheck></TablerCheck></button
           >
         </div>

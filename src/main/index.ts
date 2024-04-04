@@ -54,25 +54,6 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window);
   });
 
-  ipcMain.on("task:create", (event, arg) => {
-    const uuid: string | null = createTask(arg.title, arg.details, arg.date);
-    if (typeof uuid === "string") {
-      event.sender.send("task:status", uuid);
-      event.sender.send("task:list", getTasks());
-    } else {
-      event.sender.send("task:status", null);
-    }
-  });
-
-  ipcMain.on("task:delete", (event, uuid: string) => {
-    deleteTask(uuid);
-    event.sender.send("task:list", getTasks());
-  });
-
-  ipcMain.on("get:list", (event) => {
-    event.sender.send("task:list", getTasks());
-  });
-
   createWindow();
 
   app.on("activate", function () {
@@ -89,4 +70,28 @@ app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     app.quit();
   }
+});
+
+ipcMain.on("task:create", (event, arg) => {
+  const uuid: string | null = createTask(arg.title, arg.details, arg.date);
+  if (typeof uuid === "string") {
+    event.sender.send("task:status", uuid);
+    event.sender.send("task:list", getTasks());
+  } else {
+    event.sender.send("task:status", null);
+  }
+});
+
+ipcMain.on("task:delete", (event, uuid: string) => {
+  deleteTask(uuid);
+  event.sender.send("task:list", getTasks());
+});
+
+ipcMain.on("task:archive", (event, uuid: string) => {
+  deleteTask(uuid);
+  event.sender.send("task:list", getTasks());
+});
+
+ipcMain.on("get:list", (event) => {
+  event.sender.send("task:list", getTasks());
 });

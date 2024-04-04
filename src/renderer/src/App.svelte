@@ -38,15 +38,15 @@
 
   window.electron.ipcRenderer.send("get:list");
 
+  window.electron.ipcRenderer.on("task:list", (_event, list: Task[]) => {
+    tasks = list;
+  });
+
   window.electron.ipcRenderer.on("task:status", (_event, result: string | null) => {
     if (result) {
       resetInputs();
       createModal?.close();
     }
-  });
-
-  window.electron.ipcRenderer.on("task:list", (_event, list: Task[]) => {
-    tasks = list;
   });
 
   onMount(() => {
@@ -104,7 +104,7 @@
   </div>
   <List
     {tasks}
-    on:edit-task={(e) => {
+    on:edit={(e) => {
       showEditModal(e.detail);
     }}
   ></List>
@@ -129,6 +129,7 @@
     bind:titleField={title}
     bind:detailsField={details}
     bind:dateField={date}
+    on:action={createTask}
   ></TaskModal>
   <TaskModal title="Edit" bind:this={editModal}></TaskModal>
 </main>

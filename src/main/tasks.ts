@@ -42,15 +42,19 @@ export function createTask(title: string, details: string, date: string): string
   return uuid;
 }
 
-export function deleteTask(uuid: string): boolean {
+export function archiveTask(uuid: string): void {
   const list: Task[] = store.get("tasks") as Task[];
-  const exists: boolean = Boolean(list.find((task) => task.uuid === uuid));
+  // const task: Task | undefined = list.find((task) => task.uuid === uuid);
 
   const filtered = list.filter((tasks) => tasks.uuid !== uuid);
 
   store.set("tasks", filtered);
+}
 
-  return exists;
+export function deleteTask(uuid: string): void {
+  const list: Task[] = store.get("tasks") as Task[];
+  const filtered = list.filter((tasks) => tasks.uuid !== uuid);
+  store.set("tasks", filtered);
 }
 
 export function getTasks(): Task[] {
