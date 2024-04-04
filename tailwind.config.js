@@ -25,6 +25,7 @@ module.exports = {
           "base-200": "#272727",
           "base-300": "#ababab",
           "base-content": "white",
+          "error": "#f54c63",
 
           "--rounded-box": "0.75rem",
           "--rounded-btn": "0.5rem",

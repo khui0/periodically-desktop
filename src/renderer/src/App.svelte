@@ -18,18 +18,21 @@
   }
 
   let tasks: Task[] = [];
-
-  // Update clock
   let currentTime: string = getTime();
+
+  // Update clock and refresh tasks every second
   setInterval(() => {
     currentTime = getTime();
+    window.electron.ipcRenderer.send("get:list");
   }, 1000);
 
+  // Create task input values
   let title: string;
   let details: string;
   let date: string;
   resetInputs();
 
+  // Elements
   let inputBar: HTMLInputElement;
   let createModal: Modal;
   let createFocusTarget: HTMLInputElement;
@@ -113,7 +116,11 @@
             {#if task.details}
               <p class="text-neutral-content">{task.details}</p>
             {/if}
-            <p class="text-neutral-500">{timeToString(task.timestamp)}</p>
+            {#if Date.parse(task.timestamp) < Date.now()}
+              <p class="text-error">{timeToString(task.timestamp)}</p>
+            {:else}
+              <p class="text-neutral-500">{timeToString(task.timestamp)}</p>
+            {/if}
           </div>
         </li>
       {/each}
