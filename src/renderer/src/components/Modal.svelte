@@ -14,7 +14,7 @@
   }
 </script>
 
-<dialog class="modal" bind:this={modal}>
+<dialog class="modal" bind:this={modal} on:close>
   <div class="modal-box">
     <form method="dialog">
       <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"

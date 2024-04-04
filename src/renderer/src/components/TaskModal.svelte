@@ -35,7 +35,7 @@
   let focusTarget: HTMLInputElement;
 </script>
 
-<Modal {title} bind:this={modal}>
+<Modal {title} bind:this={modal} on:close>
   <div class="flex flex-col gap-2">
     <input
       type="text"
