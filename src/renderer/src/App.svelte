@@ -3,7 +3,6 @@
   import pluralize from "pluralize";
   import { endOfToday, getTime, timeToISO } from "./lib/time";
   import List from "./components/List.svelte";
-  import Modal from "./components/Modal.svelte";
   import TaskModal from "./components/TaskModal.svelte";
 
   import TablerDots from "~icons/tabler/dots";
@@ -34,8 +33,7 @@
   resetInputs();
 
   // Elements
-  let createModal: Modal;
-  let createFocusTarget: HTMLInputElement;
+  let createModal: TaskModal;
   let editModal: TaskModal;
 
   window.electron.ipcRenderer.send("get:list");
@@ -43,7 +41,7 @@
   window.electron.ipcRenderer.on("task:status", (_event, result: string | null) => {
     if (result) {
       resetInputs();
-      createModal.close();
+      createModal?.close();
     }
   });
 
@@ -55,8 +53,10 @@
     document.addEventListener("keydown", (e) => {
       const hasModalOpen: boolean = Boolean(document.querySelector(`dialog[open]`));
       if (e.ctrlKey && e.key === "Enter") {
+        // Create task on Ctrl + Enter
         createTask();
       } else if (!hasModalOpen && document.activeElement.tagName !== "input") {
+        // Focus input on keydown
         const input = document.getElementById("create-task-input");
         input.focus();
       }
@@ -73,7 +73,6 @@
     if (!e.ctrlKey && e.key === "Enter") {
       e.preventDefault();
       createModal.showModal();
-      createFocusTarget.focus();
     }
   }
 
@@ -124,28 +123,12 @@
       <button class="btn btn-sm btn-circle"><TablerSettings></TablerSettings></button>
     </div>
   </div>
-  <Modal title="Create" bind:this={createModal}>
-    <div class="flex flex-col gap-2">
-      <input
-        type="text"
-        placeholder="Title"
-        class="input input-bordered placeholder-neutral-500"
-        bind:value={title}
-        bind:this={createFocusTarget}
-      />
-      <textarea
-        class="textarea textarea-bordered placeholder-neutral-500 resize-none w-full block"
-        placeholder="Details"
-        bind:value={details}
-      ></textarea>
-      <input
-        type="datetime-local"
-        placeholder="Title"
-        class="input input-bordered placeholder-neutral-500"
-        bind:value={date}
-      />
-      <button class="btn btn-primary btn-sm" on:click={createTask}>Create</button>
-    </div>
-  </Modal>
+  <TaskModal
+    title="Create"
+    bind:this={createModal}
+    bind:titleField={title}
+    bind:detailsField={details}
+    bind:dateField={date}
+  ></TaskModal>
   <TaskModal title="Edit" bind:this={editModal}></TaskModal>
 </main>

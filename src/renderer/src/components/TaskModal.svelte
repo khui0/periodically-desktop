@@ -1,28 +1,38 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
   import Modal from "./Modal.svelte";
+  import { endOfToday } from "../lib/time";
 
   export let title: string;
   export let action: string = title;
+  export let focus: boolean = true;
 
-  export function showModal(title: string, details: string, date: string) {
-    titleField = title;
-    detailsField = details;
-    dateField = date;
+  export let titleField: string = "";
+  export let detailsField: string = "";
+  export let dateField: string = endOfToday();
+
+  export function showModal(title?: string, details?: string, date?: string) {
+    titleField ||= title;
+    detailsField ||= details;
+    dateField ||= date;
     modal.showModal();
+    if (focus) {
+      focusTarget.focus();
+    }
   }
 
   export function close() {
     modal.close();
+    // Reset fields
+    titleField = "";
+    detailsField = "";
+    dateField = endOfToday();
   }
 
-  let modal: Modal;
-
-  let titleField: string;
-  let detailsField: string;
-  let dateField: string;
-
   const dispatch = createEventDispatcher();
+
+  let modal: Modal;
+  let focusTarget: HTMLInputElement;
 </script>
 
 <Modal {title} bind:this={modal}>
@@ -32,6 +42,7 @@
       placeholder="Title"
       class="input input-bordered placeholder-neutral-500"
       bind:value={titleField}
+      bind:this={focusTarget}
     />
     <textarea
       class="textarea textarea-bordered placeholder-neutral-500 resize-none w-full block"
