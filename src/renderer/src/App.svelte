@@ -1,7 +1,8 @@
 <script lang="ts">
   import { OverlayScrollbarsComponent } from "overlayscrollbars-svelte";
-  import Modal from "./components/Modal.svelte";
   import { endOfToday, getTime, timeToString } from "./lib/time";
+  import pluralize from "pluralize";
+  import Modal from "./components/Modal.svelte";
 
   import TablerDots from "~icons/tabler/dots";
   import TablerArchive from "~icons/tabler/archive";
@@ -10,21 +11,13 @@
   import TablerCheck from "~icons/tabler/check";
 
   interface Task {
+    uuid: string;
     title: string;
     details?: string;
-    timestamp: number;
+    timestamp: string;
   }
 
-  let tasks: Task[] = [
-    {
-      title: "calc:ap classroom",
-      timestamp: Date.now(),
-    },
-    {
-      title: "This is a test task",
-      timestamp: Date.now(),
-    },
-  ];
+  let tasks: Task[] = [];
 
   // Update clock
   let currentTime: string = getTime();
@@ -40,6 +33,7 @@
   let inputBar: HTMLInputElement;
   let createModal: Modal;
   let createFocusTarget: HTMLInputElement;
+  let editModal: Modal;
 
   function resetInputs(): void {
     title = "";
@@ -56,8 +50,25 @@
   }
 
   function createNewTask(): void {
-    console.log(title, details, date);
+    window.electron.ipcRenderer.send("task:create", {
+      title: title,
+      details: details,
+      date: date,
+    });
   }
+
+  window.electron.ipcRenderer.send("get:list");
+
+  window.electron.ipcRenderer.on("task:status", (_event, res: string | null) => {
+    if (res) {
+      resetInputs();
+      createModal.close();
+    }
+  });
+
+  window.electron.ipcRenderer.on("task:list", (_event, res: Task[]) => {
+    tasks = res;
+  });
 
   document.addEventListener("keydown", () => {
     const hasModalOpen: boolean = Boolean(document.querySelector(`dialog[open]`));
@@ -69,7 +80,7 @@
 
 <main class="flex flex-col p-4 gap-2 justify-between h-full">
   <div class="flex flex-row items-center justify-between text-2xl">
-    <p>{tasks.length} tasks</p>
+    <p>{pluralize("task", tasks.length, true)}</p>
     <div class="flex flex-row gap-2">
       <select class="select select-bordered select-sm max-w-xs">
         <option>Default</option>
@@ -131,6 +142,28 @@
         class="input input-bordered placeholder-neutral-500"
         bind:value={title}
         bind:this={createFocusTarget}
+      />
+      <textarea
+        class="textarea textarea-bordered placeholder-neutral-500 resize-none w-full block"
+        placeholder="Details"
+        bind:value={details}
+      ></textarea>
+      <input
+        type="datetime-local"
+        placeholder="Title"
+        class="input input-bordered placeholder-neutral-500"
+        bind:value={date}
+      />
+      <button class="btn btn-primary btn-sm" on:click={createNewTask}>Create</button>
+    </div>
+  </Modal>
+  <Modal title="Edit" bind:this={editModal}>
+    <div class="flex flex-col gap-2">
+      <input
+        type="text"
+        placeholder="Title"
+        class="input input-bordered placeholder-neutral-500"
+        bind:value={title}
       />
       <textarea
         class="textarea textarea-bordered placeholder-neutral-500 resize-none w-full block"

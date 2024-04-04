@@ -21,8 +21,11 @@
     "@electron-toolkit/preload": "^3.0.0",
     "@electron-toolkit/utils": "^3.0.0",
     "@fontsource-variable/figtree": "^5.0.20",
+    "electron-store": "^8.2.0",
     "overlayscrollbars": "^2.7.0",
-    "overlayscrollbars-svelte": "^0.5.4"
+    "overlayscrollbars-svelte": "^0.5.4",
+    "pluralize": "^8.0.0",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config-prettier": "^2.0.0",

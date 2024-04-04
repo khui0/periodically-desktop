@@ -8,6 +8,10 @@
   export function showModal(): void {
     modal.showModal();
   }
+
+  export function close(): void {
+    modal.close();
+  }
 </script>
 
 <dialog class="modal" bind:this={modal}>

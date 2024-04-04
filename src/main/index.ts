@@ -3,6 +3,8 @@ import { join } from "path";
 import { electronApp, optimizer, is } from "@electron-toolkit/utils";
 import icon from "../../resources/icon.png?asset";
 
+import { createTask, getTasks } from "./tasks";
+
 function createWindow(): void {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -51,8 +53,19 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window);
   });
 
-  // IPC test
-  ipcMain.on("ping", () => console.log("pong"));
+  ipcMain.on("task:create", (event, arg) => {
+    const uuid: string | null = createTask(arg.title, arg.details, arg.date);
+    if (typeof uuid === "string") {
+      event.sender.send("task:status", uuid);
+      event.sender.send("task:list", getTasks());
+    } else {
+      event.sender.send("task:status", null);
+    }
+  });
+
+  ipcMain.on("get:list", (event) => {
+    event.sender.send("task:list", getTasks());
+  });
 
   createWindow();
 
@@ -71,6 +84,3 @@ app.on("window-all-closed", () => {
     app.quit();
   }
 });
-
-// In this file you can include the rest of your app"s specific main process
-// code. You can also put them in separate files and require them here.
