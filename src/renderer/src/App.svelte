@@ -1,9 +1,10 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import pluralize from "pluralize";
+  import { endOfToday, getTime, timeToISO } from "./lib/time";
   import List from "./components/List.svelte";
   import Modal from "./components/Modal.svelte";
-  import { endOfToday, getTime } from "./lib/time";
+  import TaskModal from "./components/TaskModal.svelte";
 
   import TablerDots from "~icons/tabler/dots";
   import TablerArchive from "~icons/tabler/archive";
@@ -35,7 +36,7 @@
   // Elements
   let createModal: Modal;
   let createFocusTarget: HTMLInputElement;
-  let editModal: Modal;
+  let editModal: TaskModal;
 
   window.electron.ipcRenderer.send("get:list");
 
@@ -76,18 +77,18 @@
     }
   }
 
+  function showEditModal(uuid: string): void {
+    const task = tasks.find((task) => task.uuid === uuid);
+    const date = timeToISO(task.timestamp);
+    editModal.showModal(task.title, task.details, date);
+  }
+
   function createTask(): void {
     window.electron.ipcRenderer.send("task:create", {
       title: title,
       details: details,
       date: date,
     });
-  }
-
-  function showEditModal(uuid: string): void {
-    const task = tasks.find((task) => task.uuid === uuid);
-    console.log(task);
-    editModal.showModal();
   }
 </script>
 
@@ -146,26 +147,5 @@
       <button class="btn btn-primary btn-sm" on:click={createTask}>Create</button>
     </div>
   </Modal>
-  <Modal title="Edit" bind:this={editModal}>
-    <div class="flex flex-col gap-2">
-      <input
-        type="text"
-        placeholder="Title"
-        class="input input-bordered placeholder-neutral-500"
-        bind:value={title}
-      />
-      <textarea
-        class="textarea textarea-bordered placeholder-neutral-500 resize-none w-full block"
-        placeholder="Details"
-        bind:value={details}
-      ></textarea>
-      <input
-        type="datetime-local"
-        placeholder="Title"
-        class="input input-bordered placeholder-neutral-500"
-        bind:value={date}
-      />
-      <button class="btn btn-primary btn-sm" on:click={createTask}>Edit</button>
-    </div>
-  </Modal>
+  <TaskModal title="Edit" bind:this={editModal}></TaskModal>
 </main>
