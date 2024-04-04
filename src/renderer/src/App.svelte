@@ -52,12 +52,16 @@
     }
   }
 
-  function createNewTask(): void {
+  function createTask(): void {
     window.electron.ipcRenderer.send("task:create", {
       title: title,
       details: details,
       date: date,
     });
+  }
+
+  function deleteTask(uuid: string): void {
+    window.electron.ipcRenderer.send("task:delete", uuid);
   }
 
   window.electron.ipcRenderer.send("get:list");
@@ -102,7 +106,12 @@
         {@const match = task.title.match(/^([A-z0-9]+):(.+)$/)}
         <li class="bg-base-200 hover:cursor-pointer p-3 rounded-box flex flex-row gap-2">
           <div class="flex flex-col gap-1 justify-center">
-            <button class="btn btn-sm btn-square"><TablerCheck></TablerCheck></button>
+            <button
+              class="btn btn-sm btn-square"
+              on:click={() => {
+                deleteTask(task.uuid);
+              }}><TablerCheck></TablerCheck></button
+            >
           </div>
           <div class="flex flex-col justify-evenly">
             <h2 class="text-xl">
@@ -161,7 +170,7 @@
         class="input input-bordered placeholder-neutral-500"
         bind:value={date}
       />
-      <button class="btn btn-primary btn-sm" on:click={createNewTask}>Create</button>
+      <button class="btn btn-primary btn-sm" on:click={createTask}>Create</button>
     </div>
   </Modal>
   <Modal title="Edit" bind:this={editModal}>
@@ -183,7 +192,7 @@
         class="input input-bordered placeholder-neutral-500"
         bind:value={date}
       />
-      <button class="btn btn-primary btn-sm" on:click={createNewTask}>Create</button>
+      <button class="btn btn-primary btn-sm" on:click={createTask}>Create</button>
     </div>
   </Modal>
 </main>

@@ -42,6 +42,17 @@ export function createTask(title: string, details: string, date: string): string
   return uuid;
 }
 
+export function deleteTask(uuid: string): boolean {
+  const list: Task[] = store.get("tasks") as Task[];
+  const exists: boolean = Boolean(list.find((task) => task.uuid === uuid));
+
+  const filtered = list.filter((tasks) => tasks.uuid !== uuid);
+
+  store.set("tasks", filtered);
+
+  return exists;
+}
+
 export function getTasks(): Task[] {
   const list = store.get("tasks") as Task[];
   // Sort tasks by due date

@@ -3,7 +3,7 @@ import { join } from "path";
 import { electronApp, optimizer, is } from "@electron-toolkit/utils";
 import icon from "../../resources/icon.png?asset";
 
-import { createTask, getTasks } from "./tasks";
+import { createTask, deleteTask, getTasks } from "./tasks";
 
 function createWindow(): void {
   // Create the browser window.
@@ -61,6 +61,11 @@ app.whenReady().then(() => {
     } else {
       event.sender.send("task:status", null);
     }
+  });
+
+  ipcMain.on("task:delete", (event, uuid: string) => {
+    deleteTask(uuid);
+    event.sender.send("task:list", getTasks());
   });
 
   ipcMain.on("get:list", (event) => {
