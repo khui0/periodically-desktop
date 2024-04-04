@@ -9,6 +9,7 @@
   import TablerShare2 from "~icons/tabler/share-2";
   import TablerSettings from "~icons/tabler/settings";
   import TablerCheck from "~icons/tabler/check";
+  import { onMount } from "svelte";
 
   interface Task {
     uuid: string;
@@ -33,10 +34,22 @@
   resetInputs();
 
   // Elements
-  let inputBar: HTMLInputElement;
   let createModal: Modal;
   let createFocusTarget: HTMLInputElement;
   let editModal: Modal;
+
+  window.electron.ipcRenderer.send("get:list");
+
+  window.electron.ipcRenderer.on("task:status", (_event, result: string | null) => {
+    if (result) {
+      resetInputs();
+      createModal.close();
+    }
+  });
+
+  window.electron.ipcRenderer.on("task:list", (_event, list: Task[]) => {
+    tasks = list;
+  });
 
   function resetInputs(): void {
     title = "";
@@ -45,7 +58,7 @@
   }
 
   function showCreateModal(e: KeyboardEvent): void {
-    if (e.key === "Enter") {
+    if (!e.ctrlKey && e.key === "Enter") {
       e.preventDefault();
       createModal.showModal();
       createFocusTarget.focus();
@@ -64,24 +77,16 @@
     window.electron.ipcRenderer.send("task:delete", uuid);
   }
 
-  window.electron.ipcRenderer.send("get:list");
-
-  window.electron.ipcRenderer.on("task:status", (_event, res: string | null) => {
-    if (res) {
-      resetInputs();
-      createModal.close();
-    }
-  });
-
-  window.electron.ipcRenderer.on("task:list", (_event, res: Task[]) => {
-    tasks = res;
-  });
-
-  document.addEventListener("keydown", () => {
-    const hasModalOpen: boolean = Boolean(document.querySelector(`dialog[open]`));
-    if (!hasModalOpen && document.activeElement.tagName !== "input") {
-      inputBar.focus();
-    }
+  onMount(() => {
+    document.addEventListener("keydown", (e) => {
+      const hasModalOpen: boolean = Boolean(document.querySelector(`dialog[open]`));
+      if (e.ctrlKey && e.key === "Enter") {
+        createTask();
+      } else if (!hasModalOpen && document.activeElement.tagName !== "input") {
+        const input = document.getElementById("create-task-input");
+        input.focus();
+      }
+    });
   });
 </script>
 
@@ -139,9 +144,9 @@
     <input
       type="text"
       class="input input-bordered input-sm w-full placeholder-neutral-500"
+      id="create-task-input"
       placeholder="Create task"
       bind:value={title}
-      bind:this={inputBar}
       on:keydown={showCreateModal}
     />
     <div class="flex flex-row bg-base-200 rounded-full">
