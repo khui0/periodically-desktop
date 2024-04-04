@@ -1,15 +1,14 @@
 <script lang="ts">
-  import { OverlayScrollbarsComponent } from "overlayscrollbars-svelte";
-  import { endOfToday, getTime, timeToString } from "./lib/time";
+  import { onMount } from "svelte";
   import pluralize from "pluralize";
+  import List from "./components/List.svelte";
   import Modal from "./components/Modal.svelte";
+  import { endOfToday, getTime } from "./lib/time";
 
   import TablerDots from "~icons/tabler/dots";
   import TablerArchive from "~icons/tabler/archive";
   import TablerShare2 from "~icons/tabler/share-2";
   import TablerSettings from "~icons/tabler/settings";
-  import TablerCheck from "~icons/tabler/check";
-  import { onMount } from "svelte";
 
   interface Task {
     uuid: string;
@@ -51,6 +50,18 @@
     tasks = list;
   });
 
+  onMount(() => {
+    document.addEventListener("keydown", (e) => {
+      const hasModalOpen: boolean = Boolean(document.querySelector(`dialog[open]`));
+      if (e.ctrlKey && e.key === "Enter") {
+        createTask();
+      } else if (!hasModalOpen && document.activeElement.tagName !== "input") {
+        const input = document.getElementById("create-task-input");
+        input.focus();
+      }
+    });
+  });
+
   function resetInputs(): void {
     title = "";
     details = "";
@@ -72,22 +83,6 @@
       date: date,
     });
   }
-
-  function deleteTask(uuid: string): void {
-    window.electron.ipcRenderer.send("task:delete", uuid);
-  }
-
-  onMount(() => {
-    document.addEventListener("keydown", (e) => {
-      const hasModalOpen: boolean = Boolean(document.querySelector(`dialog[open]`));
-      if (e.ctrlKey && e.key === "Enter") {
-        createTask();
-      } else if (!hasModalOpen && document.activeElement.tagName !== "input") {
-        const input = document.getElementById("create-task-input");
-        input.focus();
-      }
-    });
-  });
 </script>
 
 <main class="flex flex-col p-4 gap-2 justify-between h-full">
@@ -101,45 +96,7 @@
     </div>
     <p>{currentTime}</p>
   </div>
-  <OverlayScrollbarsComponent
-    element="span"
-    class="h-full"
-    options={{ scrollbars: { autoHide: "scroll", theme: "os-theme-light" } }}
-    defer
-    ><ol class="flex flex-col gap-2">
-      {#each tasks as task}
-        {@const match = task.title.match(/^([A-z0-9]+):(.+)$/)}
-        <li class="bg-base-200 hover:cursor-pointer p-3 rounded-box flex flex-row gap-2">
-          <div class="flex flex-col gap-1 justify-center">
-            <button
-              class="btn btn-sm btn-square"
-              on:click={() => {
-                deleteTask(task.uuid);
-              }}><TablerCheck></TablerCheck></button
-            >
-          </div>
-          <div class="flex flex-col justify-evenly">
-            <h2 class="text-xl">
-              {#if match}
-                <span class="badge badge-outline align-middle">{match[1]}</span>
-                {match[2]}
-              {:else}
-                {task.title}
-              {/if}
-            </h2>
-            {#if task.details}
-              <p class="text-neutral-content">{task.details}</p>
-            {/if}
-            {#if Date.parse(task.timestamp) < Date.now()}
-              <p class="text-error">{timeToString(task.timestamp)}</p>
-            {:else}
-              <p class="text-neutral-500">{timeToString(task.timestamp)}</p>
-            {/if}
-          </div>
-        </li>
-      {/each}
-    </ol></OverlayScrollbarsComponent
-  >
+  <List {tasks}></List>
   <div class="flex flex-row gap-2">
     <input
       type="text"
