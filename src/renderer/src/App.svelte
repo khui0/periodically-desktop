@@ -83,6 +83,12 @@
       date: date,
     });
   }
+
+  function showEditModal(uuid: string): void {
+    const task = tasks.find((task) => task.uuid === uuid);
+    console.log(task);
+    editModal.showModal();
+  }
 </script>
 
 <main class="flex flex-col p-4 gap-2 justify-between h-full">
@@ -96,7 +102,12 @@
     </div>
     <p>{currentTime}</p>
   </div>
-  <List {tasks}></List>
+  <List
+    {tasks}
+    on:edit-task={(e) => {
+      showEditModal(e.detail);
+    }}
+  ></List>
   <div class="flex flex-row gap-2">
     <input
       type="text"
@@ -154,7 +165,7 @@
         class="input input-bordered placeholder-neutral-500"
         bind:value={date}
       />
-      <button class="btn btn-primary btn-sm" on:click={createTask}>Create</button>
+      <button class="btn btn-primary btn-sm" on:click={createTask}>Edit</button>
     </div>
   </Modal>
 </main>

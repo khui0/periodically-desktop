@@ -2,8 +2,7 @@
   import { OverlayScrollbarsComponent } from "overlayscrollbars-svelte";
   import { timeToString } from "../lib/time";
   import TablerCheck from "~icons/tabler/check";
-
-  export let tasks: Task[];
+  import { createEventDispatcher } from "svelte";
 
   interface Task {
     uuid: string;
@@ -11,6 +10,10 @@
     details?: string;
     timestamp: string;
   }
+
+  export let tasks: Task[];
+
+  const dispatch = createEventDispatcher();
 
   function deleteTask(uuid: string): void {
     window.electron.ipcRenderer.send("task:delete", uuid);
@@ -25,7 +28,13 @@
   ><ol class="flex flex-col gap-2">
     {#each tasks as task}
       {@const match = task.title.match(/^([A-z0-9]+):(.+)$/)}
-      <li class="bg-base-200 hover:cursor-pointer p-3 rounded-box flex flex-row gap-2">
+      <li
+        class="bg-base-200 hover:cursor-pointer p-3 rounded-box flex flex-row gap-2"
+        role="presentation"
+        on:dblclick={() => {
+          dispatch("edit-task", task.uuid);
+        }}
+      >
         <div class="flex flex-col gap-1 justify-center">
           <button
             class="btn btn-sm btn-square"
