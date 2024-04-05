@@ -3,6 +3,10 @@
   import { timeToString } from "../lib/time";
   import { createEventDispatcher } from "svelte";
 
+  import { cubicOut } from "svelte/easing";
+  import { crossfade } from "svelte/transition";
+  import { flip } from "svelte/animate";
+
   import TablerCheck from "~icons/tabler/check";
 
   interface Task {
@@ -15,6 +19,22 @@
   export let tasks: Task[];
 
   const dispatch = createEventDispatcher();
+
+  const [send, receive] = crossfade({
+    fallback(node) {
+      const style = getComputedStyle(node);
+      const transform = style.transform === "none" ? "" : style.transform;
+
+      return {
+        duration: 500,
+        easing: cubicOut,
+        css: (t) => `
+					transform: ${transform} scale(${t});
+					opacity: ${t}
+				`,
+      };
+    },
+  });
 </script>
 
 <OverlayScrollbarsComponent
@@ -23,7 +43,7 @@
   options={{ scrollbars: { autoHide: "scroll", theme: "os-theme-light" } }}
   defer
   ><ol class="flex flex-col gap-2">
-    {#each tasks as task}
+    {#each tasks as task (task.uuid)}
       {@const match = task.title.match(/^([A-z0-9]+):(.+)$/)}
       <li
         class="bg-base-200 hover:cursor-pointer p-3 rounded-box flex flex-row gap-2"
@@ -31,6 +51,9 @@
         on:dblclick={() => {
           dispatch("edit", task.uuid);
         }}
+        in:receive={{ key: task.uuid }}
+        out:send={{ key: task.uuid }}
+        animate:flip
       >
         <div class="flex flex-col gap-1 justify-center">
           <button
