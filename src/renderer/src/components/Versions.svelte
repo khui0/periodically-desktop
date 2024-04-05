@@ -2,7 +2,7 @@
   const versions = window.electron.process.versions;
 </script>
 
-<div class="flex flex-row gap-4 bg-base-200 w-fit px-4 py-2 rounded-full">
+<div class="flex flex-row justify-evenly gap-2 flex-wrap">
   <p>Electron {versions.electron}</p>
   <p>Chromium {versions.chrome}</p>
   <p>Node {versions.node}</p>

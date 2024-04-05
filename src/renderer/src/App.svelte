@@ -2,14 +2,24 @@
   import { onMount } from "svelte";
   import pluralize from "pluralize";
   import { endOfToday, getTime, timeToISO } from "./lib/time";
+
   import List from "./components/List.svelte";
   import TaskModal from "./components/TaskModal.svelte";
+  import ListsModal from "./components/ListsModal.svelte";
   import ArchiveModal from "./components/ArchiveModal.svelte";
+  import SettingsModal from "./components/SettingsModal.svelte";
 
   import TablerDots from "~icons/tabler/dots";
   import TablerCheck from "~icons/tabler/check";
   import TablerArchive from "~icons/tabler/archive";
   import TablerSettings from "~icons/tabler/settings";
+
+  // Modals
+  let createModal: TaskModal;
+  let editModal: TaskModal;
+  let listsModal: ListsModal;
+  let archiveModal: ArchiveModal;
+  let settingsModal: SettingsModal;
 
   interface Task {
     uuid: string;
@@ -34,11 +44,6 @@
   let details: string;
   let date: string;
   resetFields();
-
-  // Modals
-  let createModal: TaskModal;
-  let editModal: TaskModal;
-  let archiveModal: ArchiveModal;
 
   window.electron.ipcRenderer.send("req:lists");
   window.electron.ipcRenderer.on("res:lists", (_event, response: string[]) => {
@@ -118,7 +123,9 @@
           <option>{list}</option>
         {/each}
       </select>
-      <button class="btn btn-sm btn-circle"><TablerDots></TablerDots></button>
+      <button class="btn btn-sm btn-circle" on:click={listsModal.show}
+        ><TablerDots></TablerDots></button
+      >
     </div>
     <p>{currentTime}</p>
   </div>
@@ -148,7 +155,9 @@
       <button class="btn btn-sm btn-circle" on:click={archiveModal.show}
         ><TablerArchive></TablerArchive></button
       >
-      <button class="btn btn-sm btn-circle"><TablerSettings></TablerSettings></button>
+      <button class="btn btn-sm btn-circle" on:click={settingsModal.show}
+        ><TablerSettings></TablerSettings></button
+      >
     </div>
   </div>
   <TaskModal
@@ -167,5 +176,7 @@
       editTask(task.uuid, task.title, task.details, task.date);
     }}
   ></TaskModal>
+  <ListsModal bind:this={listsModal}></ListsModal>
   <ArchiveModal bind:this={archiveModal} tasks={archive}></ArchiveModal>
+  <SettingsModal bind:this={settingsModal}></SettingsModal>
 </main>

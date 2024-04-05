@@ -1,5 +1,6 @@
 <script lang="ts">
   import Modal from "./Modal.svelte";
+  import Versions from "./Versions.svelte";
 
   let modal: Modal;
 
@@ -8,4 +9,8 @@
   }
 </script>
 
-<Modal title="Settings" bind:this={modal}></Modal>
+<Modal title="Settings" bind:this={modal}>
+  <div class="flex flex-col gap-2 max-h-[calc(100vh-10.25rem)]">
+    <Versions></Versions>
+  </div>
+</Modal>
