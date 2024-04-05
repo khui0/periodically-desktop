@@ -50,12 +50,9 @@
   });
 
   onMount(() => {
-    document.addEventListener("keydown", (e) => {
+    document.addEventListener("keydown", () => {
       const hasModalOpen: boolean = Boolean(document.querySelector(`dialog[open]`));
-      if (e.ctrlKey && e.key === "Enter") {
-        // Create task on Ctrl + Enter
-        createTask();
-      } else if (!hasModalOpen && document.activeElement.tagName !== "input") {
+      if (!hasModalOpen && document.activeElement.tagName !== "input") {
         // Focus input on keydown
         const input = document.getElementById("create-task-input");
         input.focus();
@@ -72,14 +69,15 @@
   function showCreateModal(e: KeyboardEvent): void {
     if (!e.ctrlKey && e.key === "Enter") {
       e.preventDefault();
-      createModal.showModal();
+      createModal.show();
     }
   }
 
   function showEditModal(uuid: string): void {
     const task = tasks.find((task) => task.uuid === uuid);
     const date = timeToISO(task.timestamp);
-    editModal.showModal(task.title, task.details, date);
+    editModal.show();
+    editModal.fill(uuid, task.title, task.details, date);
   }
 
   function createTask(): void {
@@ -87,6 +85,15 @@
       title: title,
       details: details,
       date: date,
+    });
+  }
+
+  function editTask(uuid: string, title: string, details: string, date: string) {
+    window.electron.ipcRenderer.send("task:edit", {
+      uuid,
+      title,
+      details,
+      date,
     });
   }
 </script>
@@ -131,5 +138,12 @@
     bind:dateField={date}
     on:action={createTask}
   ></TaskModal>
-  <TaskModal title="Edit" bind:this={editModal}></TaskModal>
+  <TaskModal
+    title="Edit"
+    bind:this={editModal}
+    on:action={(e) => {
+      const task = e.detail;
+      editTask(task.uuid, task.title, task.details, task.date);
+    }}
+  ></TaskModal>
 </main>

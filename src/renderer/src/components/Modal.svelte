@@ -12,6 +12,10 @@
   export function close(): void {
     modal.close();
   }
+
+  export function isOpen(): boolean {
+    return modal.open;
+  }
 </script>
 
 <dialog class="modal" bind:this={modal} on:close>

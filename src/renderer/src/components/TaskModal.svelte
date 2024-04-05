@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
+  import { createEventDispatcher, onMount } from "svelte";
   import Modal from "./Modal.svelte";
   import { endOfToday } from "../lib/time";
 
@@ -11,17 +11,28 @@
   export let detailsField: string = "";
   export let dateField: string = endOfToday();
 
-  export function showModal(title?: string, details?: string, date?: string) {
-    titleField ||= title;
-    detailsField ||= details;
-    dateField ||= date;
+  const dispatch = createEventDispatcher();
+
+  let modal: Modal;
+  let focusTarget: HTMLInputElement;
+
+  let taskUUID: string;
+
+  export function show(): void {
     modal.showModal();
     if (focus) {
       focusTarget.focus();
     }
   }
 
-  export function close() {
+  export function fill(uuid?: string, title?: string, details?: string, date?: string): void {
+    taskUUID = uuid;
+    title && (titleField = title);
+    details && (detailsField = details);
+    date && (dateField = date);
+  }
+
+  export function close(): void {
     modal.close();
     // Reset fields
     titleField = "";
@@ -29,10 +40,29 @@
     dateField = endOfToday();
   }
 
-  const dispatch = createEventDispatcher();
+  export function isOpen(): boolean {
+    return modal.isOpen();
+  }
 
-  let modal: Modal;
-  let focusTarget: HTMLInputElement;
+  // Dispatch action event on Ctrl + Enter
+  onMount(() => {
+    document.addEventListener("keydown", (e) => {
+      if (isOpen()) {
+        if (e.ctrlKey && e.key === "Enter") {
+          dispatchAction();
+        }
+      }
+    });
+  });
+
+  function dispatchAction() {
+    dispatch("action", {
+      uuid: taskUUID,
+      title: titleField,
+      details: detailsField,
+      date: dateField,
+    });
+  }
 </script>
 
 <Modal {title} bind:this={modal} on:close>
@@ -55,11 +85,6 @@
       class="input input-bordered placeholder-neutral-500"
       bind:value={dateField}
     />
-    <button
-      class="btn btn-primary btn-sm"
-      on:click={() => {
-        dispatch("action", { title: titleField, details: detailsField, date: dateField });
-      }}>{action}</button
-    >
+    <button class="btn btn-primary btn-sm" on:click={dispatchAction}>{action}</button>
   </div>
 </Modal>

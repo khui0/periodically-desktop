@@ -1,6 +1,8 @@
 import { v4 as uuidv4 } from "uuid";
 import Store from "electron-store";
 
+export type { Task };
+
 const store = new Store({
   schema: {
     tasks: {
