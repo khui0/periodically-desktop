@@ -34,8 +34,13 @@ export function timeToString(timestamp): string {
     if (hours == 0) {
       hours = 12;
     }
-    if (isToday(timestamp)) {
+    const deltaDay = getDeltaDay(timestamp);
+    if (deltaDay === 0) {
       return `Today at ${hours}:${minutes} ${period}`;
+    } else if (deltaDay === 1) {
+      return `Tomorrow at ${hours}:${minutes} ${period}`;
+    } else if (deltaDay === -1) {
+      return `Yesterday at ${hours}:${minutes} ${period}`;
     } else {
       return `${month}/${day}/${year} ${hours}:${minutes} ${period}`;
     }
@@ -52,16 +57,13 @@ export function getTime(): string {
   return time;
 }
 
-// Check if the date provided the same date as today
-export function isToday(timestamp): boolean {
-  const target = new Date(timestamp);
-  const today = new Date();
-  const comparisons = [
-    target.getFullYear() == today.getFullYear(),
-    target.getMonth() == today.getMonth(),
-    target.getDate() == today.getDate(),
-  ];
-  return comparisons.every((value) => value);
+// Returns the difference in days between a date and now
+export function getDeltaDay(date: string): number {
+  const DAY: number = 86_400_000;
+  const TIMEZONE_OFFSET: number = new Date().getTimezoneOffset() * 60_000;
+  const target: number = Math.floor((new Date(date).getTime() - TIMEZONE_OFFSET) / DAY);
+  const now: number = Math.floor(Date.now() / DAY);
+  return target - now;
 }
 
 // Convert date into ISO format for use in datetime-local input
