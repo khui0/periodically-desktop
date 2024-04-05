@@ -30,7 +30,7 @@
   let title: string;
   let details: string;
   let date: string;
-  resetInputs();
+  resetFields();
 
   // Elements
   let createModal: TaskModal;
@@ -42,17 +42,14 @@
     tasks = list;
   });
 
-  window.electron.ipcRenderer.on("task:status", (_event, result: string | null) => {
-    if (result) {
-      resetInputs();
-      createModal?.close();
-    }
-  });
-
   onMount(() => {
-    document.addEventListener("keydown", () => {
+    document.addEventListener("keydown", (e) => {
       const hasModalOpen: boolean = Boolean(document.querySelector(`dialog[open]`));
-      if (!hasModalOpen && document.activeElement.tagName !== "input") {
+      if (hasModalOpen) return;
+      if (e.ctrlKey && e.key === "Enter") {
+        createTask();
+      }
+      if (document.activeElement.tagName !== "input") {
         // Focus input on keydown
         const input = document.getElementById("create-task-input");
         input.focus();
@@ -60,7 +57,7 @@
     });
   });
 
-  function resetInputs(): void {
+  function resetFields(): void {
     title = "";
     details = "";
     date = endOfToday();

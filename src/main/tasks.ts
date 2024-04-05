@@ -24,12 +24,12 @@ const store = new Store({
 interface Task {
   uuid: string;
   title: string;
-  details?: string;
+  details: string | undefined;
   timestamp: string;
 }
 
-export function createTask(title: string, details: string, date: string): string | null {
-  if (!title?.trim() || !date?.trim()) return null;
+export function createTask(title: string, details: string, date: string): string | undefined {
+  if (!title?.trim() || !date?.trim()) return;
   const uuid = uuidv4();
 
   const list: Task[] = store.get("tasks") as Task[];
@@ -42,6 +42,18 @@ export function createTask(title: string, details: string, date: string): string
   store.set("tasks", list);
 
   return uuid;
+}
+
+export function editTask(uuid: string, title: string, details: string, date: string): void {
+  const list: Task[] = store.get("tasks") as Task[];
+  const index: number = list.findIndex((task) => task.uuid === uuid);
+  list[index] = {
+    uuid: uuid,
+    title: title,
+    details: details,
+    timestamp: date,
+  };
+  store.set("tasks", list);
 }
 
 export function archiveTask(uuid: string): void {

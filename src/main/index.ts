@@ -3,7 +3,7 @@ import { join } from "path";
 import { electronApp, optimizer, is } from "@electron-toolkit/utils";
 import icon from "../../resources/icon.png?asset";
 
-import { Task, createTask, deleteTask, getTasks } from "./tasks";
+import { createTask, deleteTask, editTask, getTasks } from "./tasks";
 
 function createWindow(): void {
   // Create the browser window.
@@ -73,7 +73,7 @@ app.on("window-all-closed", () => {
 });
 
 ipcMain.on("task:create", (event, arg) => {
-  const uuid: string | null = createTask(arg.title, arg.details, arg.date);
+  const uuid: string | undefined = createTask(arg.title, arg.details, arg.date);
   if (typeof uuid === "string") {
     event.sender.send("task:status", uuid);
     event.sender.send("task:list", getTasks());
@@ -82,8 +82,8 @@ ipcMain.on("task:create", (event, arg) => {
   }
 });
 
-ipcMain.on("task:edit", (event, task: Task) => {
-  console.log(task);
+ipcMain.on("task:edit", (event, arg) => {
+  editTask(arg.uuid, arg.title, arg.details, arg.date);
   event.sender.send("task:list", getTasks());
 });
 

@@ -55,13 +55,14 @@
     });
   });
 
-  function dispatchAction() {
+  function dispatchAction(): void {
     dispatch("action", {
       uuid: taskUUID,
       title: titleField,
       details: detailsField,
       date: dateField,
     });
+    close();
   }
 </script>
 
