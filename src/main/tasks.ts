@@ -4,19 +4,37 @@ import Store from "electron-store";
 export type { Task };
 
 const store = new Store({
+  defaults: {
+    lists: [
+      {
+        name: "Default",
+        tasks: [],
+      },
+    ],
+  },
   schema: {
-    tasks: {
+    lists: {
       type: "array",
       items: {
         type: "object",
         properties: {
-          uuid: { type: "string" },
-          title: { type: "string" },
-          details: { type: "string" },
-          timestamp: { type: "string" },
+          name: {
+            type: "string",
+          },
+          tasks: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                uuid: { type: "string" },
+                title: { type: "string" },
+                details: { type: "string" },
+                timestamp: { type: "string" },
+              },
+            },
+          },
         },
       },
-      default: [],
     },
   },
 });
@@ -28,52 +46,55 @@ interface Task {
   timestamp: string;
 }
 
+interface List {
+  name: string;
+  tasks: Task[];
+}
+
 export function createTask(title: string, details: string, date: string): string | undefined {
   if (!title?.trim() || !date?.trim()) return;
   const uuid = uuidv4();
 
-  const list: Task[] = store.get("tasks") as Task[];
-  list.push({
+  const lists: List[] = store.get("lists") as List[];
+  lists[0]["tasks"].push({
     uuid: uuid,
     title: title,
     details: details,
     timestamp: date,
   });
-  store.set("tasks", list);
+  store.set("lists", lists);
 
   return uuid;
 }
 
 export function editTask(uuid: string, title: string, details: string, date: string): void {
-  const list: Task[] = store.get("tasks") as Task[];
-  const index: number = list.findIndex((task) => task.uuid === uuid);
-  list[index] = {
+  const lists: List[] = store.get("lists") as List[];
+  const tasks: Task[] = lists[0]["tasks"];
+  const index: number = tasks.findIndex((task) => task.uuid === uuid);
+  lists[0]["tasks"][index] = {
     uuid: uuid,
     title: title,
     details: details,
     timestamp: date,
   };
-  store.set("tasks", list);
+  store.set("lists", lists);
 }
 
 export function archiveTask(uuid: string): void {
-  const list: Task[] = store.get("tasks") as Task[];
-  // const task: Task | undefined = list.find((task) => task.uuid === uuid);
-
-  const filtered = list.filter((tasks) => tasks.uuid !== uuid);
-
-  store.set("tasks", filtered);
+  console.log(uuid);
 }
 
 export function deleteTask(uuid: string): void {
-  const list: Task[] = store.get("tasks") as Task[];
-  const filtered = list.filter((tasks) => tasks.uuid !== uuid);
-  store.set("tasks", filtered);
+  const lists: List[] = store.get("lists") as List[];
+  const tasks: Task[] = lists[0]["tasks"];
+  lists[0]["tasks"] = tasks.filter((task) => task.uuid !== uuid);
+  store.set("lists", lists);
 }
 
 export function getTasks(): Task[] {
-  const list = store.get("tasks") as Task[];
+  const lists: List[] = store.get("lists") as List[];
+  const tasks: Task[] = lists[0]["tasks"];
   // Sort tasks by due date
-  list.sort((a, b) => (a.timestamp > b.timestamp ? 1 : b.timestamp > a.timestamp ? -1 : 0));
-  return list;
+  tasks.sort((a, b) => (a.timestamp > b.timestamp ? 1 : b.timestamp > a.timestamp ? -1 : 0));
+  return tasks;
 }
