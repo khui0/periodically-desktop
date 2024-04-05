@@ -4,6 +4,7 @@
   import { endOfToday, getTime, timeToISO } from "./lib/time";
   import List from "./components/List.svelte";
   import TaskModal from "./components/TaskModal.svelte";
+  import ArchiveModal from "./components/ArchiveModal.svelte";
 
   import TablerDots from "~icons/tabler/dots";
   import TablerCheck from "~icons/tabler/check";
@@ -33,9 +34,10 @@
   let date: string;
   resetFields();
 
-  // Elements
+  // Modals
   let createModal: TaskModal;
   let editModal: TaskModal;
+  let archiveModal: ArchiveModal;
 
   window.electron.ipcRenderer.send("req:lists");
   window.electron.ipcRenderer.send("req:tasks");
@@ -138,7 +140,9 @@
       on:keydown={showCreateModal}
     />
     <div class="flex flex-row bg-base-200 rounded-full">
-      <button class="btn btn-sm btn-circle"><TablerArchive></TablerArchive></button>
+      <button class="btn btn-sm btn-circle" on:click={archiveModal.show}
+        ><TablerArchive></TablerArchive></button
+      >
       <button class="btn btn-sm btn-circle"><TablerSettings></TablerSettings></button>
     </div>
   </div>
@@ -158,4 +162,5 @@
       editTask(task.uuid, task.title, task.details, task.date);
     }}
   ></TaskModal>
+  <ArchiveModal bind:this={archiveModal}></ArchiveModal>
 </main>
