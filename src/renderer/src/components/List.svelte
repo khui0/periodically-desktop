@@ -45,8 +45,10 @@
   ><ol class="flex flex-col gap-2">
     {#each tasks as task (task.uuid)}
       {@const match = task.title.match(/^([A-z0-9]+):(.+)$/)}
+      {@const pastDue = Date.parse(task.timestamp) < Date.now()}
       <li
-        class="bg-base-200 hover:cursor-pointer p-3 rounded-box flex flex-row gap-2"
+        class="bg-base-200 hover:cursor-pointer p-3 rounded-box flex flex-row gap-2 border-error"
+        class:border-2={pastDue}
         role="presentation"
         on:dblclick={() => {
           dispatch("edit", task.uuid);
@@ -75,11 +77,7 @@
           {#if task.details}
             <p class="text-neutral-content">{task.details}</p>
           {/if}
-          {#if Date.parse(task.timestamp) < Date.now()}
-            <p class="text-error">{timeToString(task.timestamp)}</p>
-          {:else}
-            <p class="text-neutral-500">{timeToString(task.timestamp)}</p>
-          {/if}
+          <p class="text-neutral-500">{timeToString(task.timestamp)}</p>
         </div>
       </li>
     {/each}
