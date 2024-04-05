@@ -3,7 +3,7 @@ import { join } from "path";
 import { electronApp, optimizer, is } from "@electron-toolkit/utils";
 import icon from "../../resources/icon.png?asset";
 
-import { createTask, deleteTask, editTask, getTasks } from "./tasks";
+import { createTask, deleteTask, editTask, getLists, getTasks } from "./tasks";
 
 function createWindow(): void {
   // Create the browser window.
@@ -73,7 +73,7 @@ app.on("window-all-closed", () => {
 });
 
 ipcMain.on("task:create", (event, arg) => {
-  const uuid: string | undefined = createTask(arg.title, arg.details, arg.date);
+  const uuid: string | undefined = createTask(0, arg.title, arg.details, arg.date);
   if (typeof uuid === "string") {
     event.sender.send("task:status", uuid);
     event.sender.send("task:list", getTasks());
@@ -83,20 +83,23 @@ ipcMain.on("task:create", (event, arg) => {
 });
 
 ipcMain.on("task:edit", (event, arg) => {
-  editTask(arg.uuid, arg.title, arg.details, arg.date);
+  editTask(0, arg.uuid, arg.title, arg.details, arg.date);
   event.sender.send("task:list", getTasks());
 });
 
 ipcMain.on("task:delete", (event, uuid: string) => {
-  deleteTask(uuid);
+  deleteTask(0, uuid);
   event.sender.send("task:list", getTasks());
 });
 
-ipcMain.on("task:archive", (event, uuid: string) => {
-  deleteTask(uuid);
-  event.sender.send("task:list", getTasks());
+// ipcMain.on("task:archive", (event, uuid: string) => {
+//   event.sender.send("task:list", getTasks());
+// });
+
+ipcMain.on("req:lists", (event) => {
+  event.sender.send("res:lists", getLists());
 });
 
-ipcMain.on("get:list", (event) => {
-  event.sender.send("task:list", getTasks());
+ipcMain.on("req:tasks", (event) => {
+  event.sender.send("res:tasks", getTasks());
 });

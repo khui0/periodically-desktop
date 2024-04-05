@@ -51,12 +51,17 @@ interface List {
   tasks: Task[];
 }
 
-export function createTask(title: string, details: string, date: string): string | undefined {
+export function createTask(
+  index: number,
+  title: string,
+  details: string,
+  date: string,
+): string | undefined {
   if (!title?.trim() || !date?.trim()) return;
   const uuid = uuidv4();
 
   const lists: List[] = store.get("lists") as List[];
-  lists[0]["tasks"].push({
+  lists[index]["tasks"].push({
     uuid: uuid,
     title: title,
     details: details,
@@ -67,11 +72,17 @@ export function createTask(title: string, details: string, date: string): string
   return uuid;
 }
 
-export function editTask(uuid: string, title: string, details: string, date: string): void {
+export function editTask(
+  index: number,
+  uuid: string,
+  title: string,
+  details: string,
+  date: string,
+): void {
   const lists: List[] = store.get("lists") as List[];
-  const tasks: Task[] = lists[0]["tasks"];
-  const index: number = tasks.findIndex((task) => task.uuid === uuid);
-  lists[0]["tasks"][index] = {
+  const tasks: Task[] = lists[index]["tasks"];
+  const targetIndex: number = tasks.findIndex((task) => task.uuid === uuid);
+  lists[0]["tasks"][targetIndex] = {
     uuid: uuid,
     title: title,
     details: details,
@@ -84,17 +95,22 @@ export function archiveTask(uuid: string): void {
   console.log(uuid);
 }
 
-export function deleteTask(uuid: string): void {
+export function deleteTask(index: number, uuid: string): void {
   const lists: List[] = store.get("lists") as List[];
-  const tasks: Task[] = lists[0]["tasks"];
+  const tasks: Task[] = lists[index]["tasks"];
   lists[0]["tasks"] = tasks.filter((task) => task.uuid !== uuid);
   store.set("lists", lists);
 }
 
-export function getTasks(): Task[] {
+export function getTasks(index: number = 0): Task[] {
   const lists: List[] = store.get("lists") as List[];
-  const tasks: Task[] = lists[0]["tasks"];
+  const tasks: Task[] = lists[index]["tasks"];
   // Sort tasks by due date
   tasks.sort((a, b) => (a.timestamp > b.timestamp ? 1 : b.timestamp > a.timestamp ? -1 : 0));
   return tasks;
+}
+
+export function getLists(): string[] {
+  const lists: List[] = store.get("lists") as List[];
+  return lists.map((list) => list.name);
 }

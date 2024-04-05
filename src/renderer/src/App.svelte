@@ -13,10 +13,11 @@
   interface Task {
     uuid: string;
     title: string;
-    details?: string;
+    details: string | undefined;
     timestamp: string;
   }
 
+  let lists: string[] = [];
   let tasks: Task[] = [];
   let currentTime: string = getTime();
 
@@ -36,10 +37,16 @@
   let createModal: TaskModal;
   let editModal: TaskModal;
 
-  window.electron.ipcRenderer.send("get:list");
+  window.electron.ipcRenderer.send("req:lists");
+  window.electron.ipcRenderer.send("req:tasks");
 
-  window.electron.ipcRenderer.on("task:list", (_event, list: Task[]) => {
-    tasks = list;
+  window.electron.ipcRenderer.on("res:lists", (_event, response: string[]) => {
+    lists = response;
+    console.log(lists);
+  });
+
+  window.electron.ipcRenderer.on("res:tasks", (_event, response: Task[]) => {
+    tasks = response;
   });
 
   onMount(() => {
@@ -48,6 +55,7 @@
       if (hasModalOpen) return;
       if (e.ctrlKey && e.key === "Enter") {
         createTask();
+        resetFields();
       }
       if (document.activeElement.tagName !== "input") {
         // Focus input on keydown
@@ -100,7 +108,9 @@
     <p>{pluralize("task", tasks.length, true)}</p>
     <div class="flex flex-row gap-2">
       <select class="select select-bordered select-sm max-w-xs">
-        <option>Default</option>
+        {#each lists as list, i (i)}
+          <option>{list}</option>
+        {/each}
       </select>
       <button class="btn btn-sm btn-circle"><TablerDots></TablerDots></button>
     </div>
