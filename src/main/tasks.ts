@@ -9,6 +9,7 @@ const store = new Store({
       {
         name: "Default",
         tasks: [],
+        archive: [],
       },
     ],
   },
@@ -22,6 +23,18 @@ const store = new Store({
             type: "string",
           },
           tasks: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                uuid: { type: "string" },
+                title: { type: "string" },
+                details: { type: "string" },
+                timestamp: { type: "string" },
+              },
+            },
+          },
+          archive: {
             type: "array",
             items: {
               type: "object",
