@@ -76,7 +76,7 @@ ipcMain.on("task:create", (event, arg) => {
   const uuid: string | undefined = createTask(0, arg.title, arg.details, arg.date);
   if (typeof uuid === "string") {
     event.sender.send("task:status", uuid);
-    event.sender.send("task:list", getTasks());
+    event.sender.send("res:tasks", getTasks(0));
   } else {
     event.sender.send("task:status", null);
   }
@@ -84,12 +84,12 @@ ipcMain.on("task:create", (event, arg) => {
 
 ipcMain.on("task:edit", (event, arg) => {
   editTask(0, arg.uuid, arg.title, arg.details, arg.date);
-  event.sender.send("task:list", getTasks());
+  event.sender.send("res:tasks", getTasks(0));
 });
 
 ipcMain.on("task:delete", (event, uuid: string) => {
   deleteTask(0, uuid);
-  event.sender.send("task:list", getTasks());
+  event.sender.send("res:tasks", getTasks(0));
 });
 
 // ipcMain.on("task:archive", (event, uuid: string) => {
@@ -100,6 +100,6 @@ ipcMain.on("req:lists", (event) => {
   event.sender.send("res:lists", getLists());
 });
 
-ipcMain.on("req:tasks", (event) => {
-  event.sender.send("res:tasks", getTasks());
+ipcMain.on("req:tasks", (event, index: number = 0) => {
+  event.sender.send("res:tasks", getTasks(index));
 });

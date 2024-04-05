@@ -42,7 +42,6 @@
 
   window.electron.ipcRenderer.on("res:lists", (_event, response: string[]) => {
     lists = response;
-    console.log(lists);
   });
 
   window.electron.ipcRenderer.on("res:tasks", (_event, response: Task[]) => {
