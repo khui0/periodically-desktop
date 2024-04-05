@@ -41,7 +41,7 @@
   }
 
   export function isOpen(): boolean {
-    return modal.isOpen();
+    return modal?.isOpen();
   }
 
   // Dispatch action event on Ctrl + Enter
