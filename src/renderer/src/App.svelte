@@ -6,6 +6,7 @@
   import TaskModal from "./components/TaskModal.svelte";
 
   import TablerDots from "~icons/tabler/dots";
+  import TablerCheck from "~icons/tabler/check";
   import TablerArchive from "~icons/tabler/archive";
   import TablerSettings from "~icons/tabler/settings";
 
@@ -119,7 +120,14 @@
     on:edit={(e) => {
       showEditModal(e.detail);
     }}
-  ></List>
+    on:action={(e) => {
+      window.electron.ipcRenderer.send("task:delete", e.detail);
+    }}
+  >
+    <span slot="action">
+      <TablerCheck></TablerCheck>
+    </span>
+  </List>
   <div class="flex flex-row gap-2">
     <input
       type="text"

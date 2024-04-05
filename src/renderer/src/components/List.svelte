@@ -7,16 +7,16 @@
   import { crossfade } from "svelte/transition";
   import { flip } from "svelte/animate";
 
-  import TablerCheck from "~icons/tabler/check";
-
   interface Task {
     uuid: string;
     title: string;
-    details?: string;
+    details: string | undefined;
     timestamp: string;
   }
 
   export let tasks: Task[];
+
+  export let showPastDue: boolean = true;
 
   const dispatch = createEventDispatcher();
 
@@ -48,7 +48,7 @@
       {@const pastDue = Date.parse(task.timestamp) < Date.now()}
       <li
         class="bg-base-200 hover:cursor-pointer p-3 rounded-box flex flex-row gap-2 border-error"
-        class:border-2={pastDue}
+        class:border-2={showPastDue && pastDue}
         role="presentation"
         on:dblclick={() => {
           dispatch("edit", task.uuid);
@@ -61,8 +61,8 @@
           <button
             class="btn btn-sm btn-square"
             on:click={() => {
-              window.electron.ipcRenderer.send("task:delete", task.uuid);
-            }}><TablerCheck></TablerCheck></button
+              dispatch("action", task.uuid);
+            }}><slot name="action" /></button
           >
         </div>
         <div class="flex flex-col justify-evenly">
