@@ -21,7 +21,7 @@
 </script>
 
 <Modal title="Archive" bind:this={modal}>
-  <div class="flex flex-col gap-2">
+  <div class="flex flex-col gap-2 max-h-[calc(100vh-10.25rem)]">
     <List
       {tasks}
       on:action={(e) => {
@@ -31,5 +31,6 @@
     >
       <span slot="action"><TablerArrowBackUp></TablerArrowBackUp></span>
     </List>
+    <button class="btn btn-sm self-center">Clear</button>
   </div>
 </Modal>
