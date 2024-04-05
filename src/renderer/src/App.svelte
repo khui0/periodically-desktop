@@ -7,7 +7,6 @@
 
   import TablerDots from "~icons/tabler/dots";
   import TablerArchive from "~icons/tabler/archive";
-  import TablerShare2 from "~icons/tabler/share-2";
   import TablerSettings from "~icons/tabler/settings";
 
   interface Task {
@@ -132,7 +131,6 @@
     />
     <div class="flex flex-row bg-base-200 rounded-full">
       <button class="btn btn-sm btn-circle"><TablerArchive></TablerArchive></button>
-      <button class="btn btn-sm btn-circle"><TablerShare2></TablerShare2></button>
       <button class="btn btn-sm btn-circle"><TablerSettings></TablerSettings></button>
     </div>
   </div>
