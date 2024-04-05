@@ -8,6 +8,10 @@ body,
   @apply h-full;
 }
 
+* {
+  @apply !placeholder-neutral-500;
+}
+
 body {
   font-family: "Figtree Variable", sans-serif;
 }

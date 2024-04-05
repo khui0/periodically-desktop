@@ -9,5 +9,7 @@
 </script>
 
 <Modal title="Lists" bind:this={modal}>
-  <div class="flex flex-col gap-2 max-h-[calc(100vh-10.25rem)]"></div>
+  <div class="flex flex-col gap-2 max-h-[calc(100vh-10.25rem)]">
+    <input type="text" class="input input-bordered" placeholder="List name" />
+  </div>
 </Modal>

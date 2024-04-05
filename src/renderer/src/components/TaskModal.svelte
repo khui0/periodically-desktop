@@ -71,19 +71,19 @@
     <input
       type="text"
       placeholder="Title"
-      class="input input-bordered placeholder-neutral-500"
+      class="input input-bordered"
       bind:value={titleField}
       bind:this={focusTarget}
     />
     <textarea
-      class="textarea textarea-bordered placeholder-neutral-500 resize-none w-full block"
+      class="textarea textarea-bordered resize-none w-full block"
       placeholder="Details"
       bind:value={detailsField}
     ></textarea>
     <input
       type="datetime-local"
       placeholder="Title"
-      class="input input-bordered placeholder-neutral-500"
+      class="input input-bordered"
       bind:value={dateField}
     />
     <button class="btn btn-primary btn-sm" on:click={dispatchAction}>{action}</button>
