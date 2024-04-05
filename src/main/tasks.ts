@@ -13,43 +13,6 @@ const store = new Store({
       },
     ],
   },
-  schema: {
-    lists: {
-      type: "array",
-      items: {
-        type: "object",
-        properties: {
-          name: {
-            type: "string",
-          },
-          tasks: {
-            type: "array",
-            items: {
-              type: "object",
-              properties: {
-                uuid: { type: "string" },
-                title: { type: "string" },
-                details: { type: "string" },
-                timestamp: { type: "string" },
-              },
-            },
-          },
-          archive: {
-            type: "array",
-            items: {
-              type: "object",
-              properties: {
-                uuid: { type: "string" },
-                title: { type: "string" },
-                details: { type: "string" },
-                timestamp: { type: "string" },
-              },
-            },
-          },
-        },
-      },
-    },
-  },
 });
 
 interface Task {
@@ -62,7 +25,10 @@ interface Task {
 interface List {
   name: string;
   tasks: Task[];
+  archive: Task[];
 }
+
+type ListType = "tasks" | "archive";
 
 export function createTask(
   index: number,
@@ -72,7 +38,6 @@ export function createTask(
 ): string | undefined {
   if (!title?.trim() || !date?.trim()) return;
   const uuid = uuidv4();
-
   const lists: List[] = store.get("lists") as List[];
   lists[index]["tasks"].push({
     uuid: uuid,
@@ -80,8 +45,8 @@ export function createTask(
     details: details,
     timestamp: date,
   });
+  // Store lists
   store.set("lists", lists);
-
   return uuid;
 }
 
@@ -101,17 +66,33 @@ export function editTask(
     details: details,
     timestamp: date,
   };
+  // Store lists
   store.set("lists", lists);
 }
 
-export function archiveTask(uuid: string): void {
-  console.log(uuid);
+export function moveTask(index: number, uuid: string, target: ListType = "archive"): void {
+  const lists: List[] = store.get("lists") as List[];
+  const source: ListType = target === "tasks" ? "archive" : "tasks";
+  const from: Task[] = lists[index][source];
+  const to: Task[] = lists[index][target];
+  // Find task with matching uuid
+  const task: Task | undefined = from.find((task) => task.uuid === uuid);
+  if (!task) return;
+  to.push(task);
+  // Set archive at index
+  lists[index][target] = to;
+  // Store lists
+  store.set("lists", lists);
+  // Delete task from source
+  deleteTask(index, uuid, source);
 }
 
-export function deleteTask(index: number, uuid: string): void {
+export function deleteTask(index: number, uuid: string, list: ListType = "tasks"): void {
   const lists: List[] = store.get("lists") as List[];
-  const tasks: Task[] = lists[index]["tasks"];
-  lists[0]["tasks"] = tasks.filter((task) => task.uuid !== uuid);
+  const tasks: Task[] = lists[index][list];
+  // Remove task with matching uuid
+  lists[index][list] = tasks.filter((task) => task.uuid !== uuid);
+  // Store lists
   store.set("lists", lists);
 }
 
@@ -120,6 +101,13 @@ export function getTasks(index: number = 0): Task[] {
   const tasks: Task[] = lists[index]["tasks"];
   // Sort tasks by due date
   tasks.sort((a, b) => (a.timestamp > b.timestamp ? 1 : b.timestamp > a.timestamp ? -1 : 0));
+  return tasks;
+}
+
+export function getArchive(index: number = 0): Task[] {
+  const lists: List[] = store.get("lists") as List[];
+  const tasks: Task[] = lists[index]["archive"];
+  tasks.reverse();
   return tasks;
 }
 

@@ -38,7 +38,7 @@
 </script>
 
 <OverlayScrollbarsComponent
-  element="span"
+  element="div"
   class="h-full"
   options={{ scrollbars: { autoHide: "scroll", theme: "os-theme-light" } }}
   defer

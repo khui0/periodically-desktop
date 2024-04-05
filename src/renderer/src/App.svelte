@@ -20,6 +20,7 @@
 
   let lists: string[] = [];
   let tasks: Task[] = [];
+  let archive: Task[] = [];
   let currentTime: string = getTime();
 
   // Update clock and refresh tasks every second
@@ -40,14 +41,18 @@
   let archiveModal: ArchiveModal;
 
   window.electron.ipcRenderer.send("req:lists");
-  window.electron.ipcRenderer.send("req:tasks");
-
   window.electron.ipcRenderer.on("res:lists", (_event, response: string[]) => {
     lists = response;
   });
 
+  window.electron.ipcRenderer.send("req:tasks");
   window.electron.ipcRenderer.on("res:tasks", (_event, response: Task[]) => {
     tasks = response;
+  });
+
+  window.electron.ipcRenderer.send("req:archive");
+  window.electron.ipcRenderer.on("res:archive", (_event, response: Task[]) => {
+    archive = response;
   });
 
   onMount(() => {
@@ -123,7 +128,7 @@
       showEditModal(e.detail);
     }}
     on:action={(e) => {
-      window.electron.ipcRenderer.send("task:delete", e.detail);
+      window.electron.ipcRenderer.send("task:archive", e.detail);
     }}
   >
     <span slot="action">
@@ -162,5 +167,5 @@
       editTask(task.uuid, task.title, task.details, task.date);
     }}
   ></TaskModal>
-  <ArchiveModal bind:this={archiveModal}></ArchiveModal>
+  <ArchiveModal bind:this={archiveModal} tasks={archive}></ArchiveModal>
 </main>

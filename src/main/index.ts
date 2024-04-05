@@ -3,7 +3,15 @@ import { join } from "path";
 import { electronApp, optimizer, is } from "@electron-toolkit/utils";
 import icon from "../../resources/icon.png?asset";
 
-import { createTask, deleteTask, editTask, getLists, getTasks } from "./tasks";
+import {
+  createTask,
+  deleteTask,
+  editTask,
+  getArchive,
+  getLists,
+  getTasks,
+  moveTask,
+} from "./tasks";
 
 function createWindow(): void {
   // Create the browser window.
@@ -87,14 +95,27 @@ ipcMain.on("task:edit", (event, arg) => {
   event.sender.send("res:tasks", getTasks(0));
 });
 
+ipcMain.on("task:archive", (event, uuid: string) => {
+  moveTask(0, uuid, "archive");
+  event.sender.send("res:tasks", getTasks(0));
+  event.sender.send("res:archive", getArchive(0));
+});
+
 ipcMain.on("task:delete", (event, uuid: string) => {
-  deleteTask(0, uuid);
+  deleteTask(0, uuid, "tasks");
   event.sender.send("res:tasks", getTasks(0));
 });
 
-// ipcMain.on("task:archive", (event, uuid: string) => {
-//   event.sender.send("task:list", getTasks());
-// });
+ipcMain.on("archived:unarchive", (event, uuid: string) => {
+  moveTask(0, uuid, "tasks");
+  event.sender.send("res:tasks", getTasks(0));
+  event.sender.send("res:archive", getArchive(0));
+});
+
+ipcMain.on("archived:delete", (event, uuid: string) => {
+  deleteTask(0, uuid, "archive");
+  event.sender.send("res:archive", getTasks(0));
+});
 
 ipcMain.on("req:lists", (event) => {
   event.sender.send("res:lists", getLists());
@@ -102,4 +123,8 @@ ipcMain.on("req:lists", (event) => {
 
 ipcMain.on("req:tasks", (event, index: number = 0) => {
   event.sender.send("res:tasks", getTasks(index));
+});
+
+ipcMain.on("req:archive", (event, index: number = 0) => {
+  event.sender.send("res:archive", getArchive(index));
 });
