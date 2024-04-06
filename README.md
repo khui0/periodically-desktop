@@ -1,6 +1,7 @@
 <p align="center">
-  <img width=128 src="https://github.com/khui0/periodically-desktop/assets/101839505/03f89ae5-310e-4faa-adc8-9934c7800a14">
+  <img width=128 src="https://github.com/khui0/periodically-desktop/assets/101839505/f7c0c05a-d8b6-4b35-9592-09cc44536624">
 </p>
+
 
 <h1 align="center">Periodically Desktop</h1>
 
