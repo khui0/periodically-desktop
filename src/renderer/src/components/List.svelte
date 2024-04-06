@@ -75,7 +75,7 @@
             {/if}
           </h2>
           {#if task.details}
-            <p class="text-neutral-content">{task.details}</p>
+            <p class="text-neutral-content whitespace-pre-wrap">{task.details}</p>
           {/if}
           <p class="text-neutral-500">{timeToString(task.timestamp)}</p>
         </div>
