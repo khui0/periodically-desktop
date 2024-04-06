@@ -146,7 +146,7 @@
       showEditModal(e.detail);
     }}
     on:action={(e) => {
-      window.electron.ipcRenderer.send("task:archive", e.detail);
+      window.electron.ipcRenderer.send("task:archive", $listIndex, e.detail);
     }}
   >
     <span slot="action">
