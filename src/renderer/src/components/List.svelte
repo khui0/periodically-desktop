@@ -59,7 +59,7 @@
       >
         <div class="flex flex-col gap-1 justify-center">
           <button
-            class="btn btn-sm btn-square"
+            class="btn btn-sm btn-square shadow-none"
             on:click={() => {
               dispatch("action", task.uuid);
             }}><slot name="action" /></button

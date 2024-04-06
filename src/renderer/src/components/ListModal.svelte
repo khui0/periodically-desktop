@@ -47,7 +47,7 @@
         readonly={$listIndex === 0 || null}
       />
       <button
-        class="btn hover:btn-primary join-item"
+        class="btn join-item"
         on:click={() => {
           window.electron.ipcRenderer.send("list:create");
         }}><TablerPlus></TablerPlus></button

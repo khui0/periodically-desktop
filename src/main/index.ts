@@ -14,9 +14,11 @@ import {
   getIndex,
   getLists,
   getTasks,
+  getTheme,
   moveTask,
   renameList,
-} from "./tasks";
+  setTheme,
+} from "./data";
 
 function createWindow(): void {
   // Create the browser window.
@@ -86,7 +88,12 @@ app.on("window-all-closed", () => {
 
 ipcMain.on("setup", (event) => {
   event.sender.send("res:lists", getLists());
-  event.sender.send("set:index", getIndex());
+  event.sender.send("res:index", getIndex());
+  event.sender.send("res:theme", getTheme());
+});
+
+ipcMain.on("theme:set", (_event, theme: string) => {
+  setTheme(theme);
 });
 
 ipcMain.on("task:create", (event, index: number, arg) => {
@@ -141,12 +148,12 @@ ipcMain.on("req:archive", (event, index: number = 0) => {
 ipcMain.on("list:create", (event) => {
   const index = createList();
   event.sender.send("res:lists", getLists());
-  event.sender.send("set:index", index);
+  event.sender.send("res:index", index);
 });
 
 ipcMain.on("list:delete", (event, index: number) => {
   deleteList(index);
-  event.sender.send("set:index", index - 1);
+  event.sender.send("res:index", index - 1);
 });
 
 ipcMain.on("list:rename", (event, index: number, name: string) => {

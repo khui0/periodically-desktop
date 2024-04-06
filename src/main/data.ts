@@ -6,6 +6,7 @@ export type { Task };
 const store = new Store({
   defaults: {
     index: 0,
+    theme: "dark",
     lists: [
       {
         name: "Default",
@@ -159,4 +160,12 @@ export function setIndex(index: number): void {
 
 export function getIndex(): number {
   return store.get("index");
+}
+
+export function getTheme(): string {
+  return store.get("theme");
+}
+
+export function setTheme(theme: string): void {
+  return store.set("theme", theme);
 }

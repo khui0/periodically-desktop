@@ -50,7 +50,7 @@
   $: $listIndex, refresh();
   window.electron.ipcRenderer.send("setup");
 
-  window.electron.ipcRenderer.on("set:index", (_event, response: number) => {
+  window.electron.ipcRenderer.on("res:index", (_event, response: number) => {
     $listIndex = response;
   });
 
