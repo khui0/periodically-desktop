@@ -35,10 +35,9 @@
   let archive: Task[] = [];
   let currentTime: string = getTime();
 
-  // Update clock and refresh tasks every second
+  // Update clock every second
   setInterval(() => {
     currentTime = getTime();
-    window.electron.ipcRenderer.send("get:list");
   }, 1000);
 
   // Create task input values

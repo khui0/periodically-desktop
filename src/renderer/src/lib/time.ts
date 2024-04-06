@@ -1,5 +1,13 @@
+interface Time {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+  passed: boolean;
+}
+
 // Return time until date in units of time
-export function timeUntil(date: string | number | Date): object {
+export function timeUntil(date: string | number | Date): Time {
   const target: number = Date.parse(date as string) || (date as number);
   const milliseconds: number = target - Date.now();
   const seconds: number = Math.floor(Math.abs(milliseconds / 1000));

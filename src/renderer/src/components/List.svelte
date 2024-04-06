@@ -18,6 +18,11 @@
 
   export let showPastDue: boolean = true;
 
+  // Refresh tasks every second
+  setInterval(() => {
+    tasks = tasks;
+  }, 1000);
+
   const dispatch = createEventDispatcher();
 
   const [send, receive] = crossfade({
