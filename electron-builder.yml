@@ -13,12 +13,13 @@ asarUnpack:
   - resources/**
 win:
   executableName: Periodically Desktop
-  icon: ./resources/icon.png
+  icon: ./resources/icon.ico
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
+  oneClick: false
 mac:
   entitlementsInherit: build/entitlements.mac.plist
   extendInfo:
