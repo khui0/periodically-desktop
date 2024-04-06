@@ -47,7 +47,7 @@
       {@const match = task.title.match(/^([A-z0-9]+):(.+)$/)}
       {@const pastDue = Date.parse(task.timestamp) < Date.now()}
       <li
-        class="bg-base-200 hover:cursor-pointer p-3 rounded-box flex flex-row gap-2"
+        class="relative overflow-hidden bg-base-200 hover:cursor-pointer p-3 rounded-box flex flex-row gap-2"
         class:past-due={showPastDue && pastDue}
         role="presentation"
         on:dblclick={() => {
@@ -85,7 +85,8 @@
 >
 
 <style>
-  .past-due {
-    @apply border-l-2 border-error;
+  .past-due::after {
+    content: "";
+    @apply absolute left-0 top-0 bottom-0 w-1 bg-error opacity-100;
   }
 </style>
