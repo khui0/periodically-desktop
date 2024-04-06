@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { listIndex } from "../lib/stores";
+
   import Modal from "./Modal.svelte";
   import List from "./List.svelte";
 
@@ -25,7 +27,7 @@
     <List
       {tasks}
       on:action={(e) => {
-        window.electron.ipcRenderer.send("archived:unarchive", e.detail);
+        window.electron.ipcRenderer.send("archived:unarchive", $listIndex, e.detail);
       }}
       showPastDue={false}
     >

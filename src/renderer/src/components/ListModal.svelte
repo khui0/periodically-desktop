@@ -15,29 +15,13 @@
   export function show(): void {
     modal.showModal();
     current = lists[$listIndex];
-    console.log(current);
-  }
-
-  export function close(): void {
-    modal.close();
   }
 
   window.electron.ipcRenderer.send("req:lists");
   window.electron.ipcRenderer.on("res:lists", (_event, response: string[]) => {
     lists = response;
+    current = lists[$listIndex];
   });
-
-  function newList(): void {
-    window.electron.ipcRenderer.send("list:create");
-  }
-
-  function deleteList(): void {
-    window.electron.ipcRenderer.send("list:delete", $listIndex);
-  }
-
-  function renameList(): void {
-    window.electron.ipcRenderer.send("list:rename", $listIndex, current);
-  }
 </script>
 
 <Modal title="List" bind:this={modal}>
@@ -45,7 +29,9 @@
     <div class="join">
       <button
         class="btn hover:btn-error join-item"
-        on:click={deleteList}
+        on:click={() => {
+          window.electron.ipcRenderer.send("list:delete", $listIndex);
+        }}
         disabled={$listIndex === 0 || null}><TablerTrash></TablerTrash></button
       >
       <input
@@ -55,13 +41,16 @@
         bind:value={current}
         on:keydown={(e) => {
           if (e.key === "Enter") {
-            renameList();
+            window.electron.ipcRenderer.send("list:rename", $listIndex, current);
           }
         }}
         readonly={$listIndex === 0 || null}
       />
-      <button class="btn hover:btn-primary join-item" on:click={newList}
-        ><TablerPlus></TablerPlus></button
+      <button
+        class="btn hover:btn-primary join-item"
+        on:click={() => {
+          window.electron.ipcRenderer.send("list:create");
+        }}><TablerPlus></TablerPlus></button
       >
     </div>
   </div>

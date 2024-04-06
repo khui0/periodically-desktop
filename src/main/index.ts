@@ -134,7 +134,8 @@ ipcMain.on("req:archive", (event, index: number = 0) => {
 
 ipcMain.on("list:create", (event) => {
   const index = createList();
-  event.sender.send("set:index", index + 1);
+  event.sender.send("res:lists", getLists());
+  event.sender.send("set:index", index);
 });
 
 ipcMain.on("list:delete", (event, index: number = 0) => {
