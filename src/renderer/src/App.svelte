@@ -108,7 +108,7 @@
   }
 
   function createTask(): void {
-    window.electron.ipcRenderer.send("task:create", {
+    window.electron.ipcRenderer.send("task:create", $listIndex, {
       title: title,
       details: details,
       date: date,
@@ -116,7 +116,7 @@
   }
 
   function editTask(uuid: string, title: string, details: string, date: string) {
-    window.electron.ipcRenderer.send("task:edit", {
+    window.electron.ipcRenderer.send("task:edit", $listIndex, {
       uuid,
       title,
       details,

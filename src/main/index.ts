@@ -4,6 +4,7 @@ import { electronApp, optimizer, is } from "@electron-toolkit/utils";
 import icon from "../../resources/icon.png?asset";
 
 import {
+  clearArchive,
   createList,
   createTask,
   deleteList,
@@ -83,7 +84,7 @@ app.on("window-all-closed", () => {
   }
 });
 
-ipcMain.on("task:create", (event, index: number = 0, arg) => {
+ipcMain.on("task:create", (event, index: number, arg) => {
   const uuid: string | undefined = createTask(index, arg.title, arg.details, arg.date);
   if (typeof uuid === "string") {
     event.sender.send("task:status", uuid);
@@ -93,30 +94,30 @@ ipcMain.on("task:create", (event, index: number = 0, arg) => {
   }
 });
 
-ipcMain.on("task:edit", (event, index: number = 0, arg) => {
-  editTask(0, arg.uuid, arg.title, arg.details, arg.date);
+ipcMain.on("task:edit", (event, index: number, arg) => {
+  editTask(index, arg.uuid, arg.title, arg.details, arg.date);
   event.sender.send("res:tasks", getTasks(index));
 });
 
-ipcMain.on("task:archive", (event, index: number = 0, uuid: string) => {
-  moveTask(0, uuid, "archive");
-  event.sender.send("res:tasks", getTasks(index));
-  event.sender.send("res:archive", getArchive(index));
-});
-
-ipcMain.on("task:delete", (event, index: number = 0, uuid: string) => {
-  deleteTask(0, uuid, "tasks");
-  event.sender.send("res:tasks", getTasks(index));
-});
-
-ipcMain.on("archived:unarchive", (event, index: number = 0, uuid: string) => {
-  moveTask(0, uuid, "tasks");
+ipcMain.on("task:archive", (event, index: number, uuid: string) => {
+  moveTask(index, uuid, "archive");
   event.sender.send("res:tasks", getTasks(index));
   event.sender.send("res:archive", getArchive(index));
 });
 
-ipcMain.on("archived:delete", (event, index: number = 0, uuid: string) => {
-  deleteTask(0, uuid, "archive");
+ipcMain.on("task:delete", (event, index: number, uuid: string) => {
+  deleteTask(index, uuid, "tasks");
+  event.sender.send("res:tasks", getTasks(index));
+});
+
+ipcMain.on("archived:unarchive", (event, index: number, uuid: string) => {
+  moveTask(index, uuid, "tasks");
+  event.sender.send("res:tasks", getTasks(index));
+  event.sender.send("res:archive", getArchive(index));
+});
+
+ipcMain.on("archived:delete", (event, index: number, uuid: string) => {
+  deleteTask(index, uuid, "archive");
   event.sender.send("res:archive", getTasks(index));
 });
 
@@ -138,11 +139,17 @@ ipcMain.on("list:create", (event) => {
   event.sender.send("set:index", index);
 });
 
-ipcMain.on("list:delete", (event, index: number = 0) => {
+ipcMain.on("list:delete", (event, index: number) => {
   deleteList(index);
   event.sender.send("set:index", index - 1);
 });
-ipcMain.on("list:rename", (event, index: number = 0, name: string) => {
+
+ipcMain.on("list:rename", (event, index: number, name: string) => {
   renameList(index, name);
   event.sender.send("res:lists", getLists());
+});
+
+ipcMain.on("clear:archive", (event, index: number) => {
+  clearArchive(index);
+  event.sender.send("res:archive", getArchive(index));
 });

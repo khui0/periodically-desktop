@@ -96,7 +96,7 @@ export function deleteTask(index: number, uuid: string, list: ListType = "tasks"
   store.set("lists", lists);
 }
 
-export function getTasks(index: number = 0): Task[] {
+export function getTasks(index: number): Task[] {
   const lists: List[] = store.get("lists") as List[];
   const tasks: Task[] = lists[index]["tasks"];
   // Sort tasks by due date
@@ -104,7 +104,7 @@ export function getTasks(index: number = 0): Task[] {
   return tasks;
 }
 
-export function getArchive(index: number = 0): Task[] {
+export function getArchive(index: number): Task[] {
   const lists: List[] = store.get("lists") as List[];
   const tasks: Task[] = lists[index]["archive"];
   tasks.reverse();
@@ -140,6 +140,13 @@ export function renameList(index: number, name: string): void {
   const lists: List[] = store.get("lists") as List[];
   if (lists.length < index) return;
   lists[index]["name"] = name;
+  // Store lists
+  store.set("lists", lists);
+}
+
+export function clearArchive(index: number): void {
+  const lists: List[] = store.get("lists") as List[];
+  lists[index]["archive"] = [];
   // Store lists
   store.set("lists", lists);
 }

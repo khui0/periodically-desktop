@@ -33,6 +33,11 @@
     >
       <span slot="action"><TablerArrowBackUp></TablerArrowBackUp></span>
     </List>
-    <button class="btn btn-sm self-center">Clear</button>
+    <button
+      class="btn btn-sm self-center"
+      on:click={() => {
+        window.electron.ipcRenderer.send("clear:archive");
+      }}>Clear</button
+    >
   </div>
 </Modal>
