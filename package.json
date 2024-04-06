@@ -2,6 +2,8 @@
   "name": "periodically-desktop",
   "version": "1.0.0",
   "main": "./out/main/index.js",
+  "description": "To-do list",
+  "author": "Kenny Hui",
   "scripts": {
     "format": "prettier --plugin prettier-plugin-svelte --write .",
     "lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",
