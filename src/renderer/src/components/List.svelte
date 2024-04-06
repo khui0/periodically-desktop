@@ -89,7 +89,7 @@
   </ol></OverlayScrollbarsComponent
 >
 
-<style>
+<style lang="postcss">
   .past-due::after {
     content: "";
     @apply absolute left-0 top-0 bottom-0 w-1 bg-error opacity-100;
