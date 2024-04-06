@@ -60,7 +60,7 @@ export function editTask(
   const lists: List[] = store.get("lists") as List[];
   const tasks: Task[] = lists[index]["tasks"];
   const targetIndex: number = tasks.findIndex((task) => task.uuid === uuid);
-  lists[0]["tasks"][targetIndex] = {
+  lists[index]["tasks"][targetIndex] = {
     uuid: uuid,
     title: title,
     details: details,

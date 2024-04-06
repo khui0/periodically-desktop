@@ -128,6 +128,7 @@
 <main class="flex flex-col p-4 gap-2 justify-between h-full">
   <div class="flex flex-row items-center justify-between text-2xl">
     <p>{pluralize("task", tasks.length, true)}</p>
+    <p>{$listIndex}</p>
     <div class="flex flex-row gap-2">
       <select class="select select-bordered select-sm max-w-xs" bind:value={$listIndex}>
         {#each lists as list, i}
