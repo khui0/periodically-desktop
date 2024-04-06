@@ -60,8 +60,8 @@ export function getTime(): string {
 // Returns the difference in days between a date and now
 export function getDeltaDay(date: string): number {
   const DAY: number = 86_400_000;
-  const TIMEZONE_OFFSET: number = new Date().getTimezoneOffset() * 60_000;
-  const target: number = Math.floor((new Date(date).getTime() - TIMEZONE_OFFSET) / DAY);
+  // const TIMEZONE_OFFSET: number = new Date().getTimezoneOffset() * 60_000;
+  const target: number = Math.floor(new Date(date).getTime() / DAY);
   const now: number = Math.floor(Date.now() / DAY);
   return target - now;
 }
