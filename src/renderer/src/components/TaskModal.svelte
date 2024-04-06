@@ -25,19 +25,16 @@
     }
   }
 
-  export function fill(uuid?: string, title?: string, details?: string, date?: string): void {
+  export function fill(uuid: string, title: string, details: string, date: string): void {
     taskUUID = uuid;
-    title && (titleField = title);
-    details && (detailsField = details);
-    date && (dateField = date);
+    titleField = title;
+    detailsField = details;
+    dateField = date;
   }
 
   export function close(): void {
     modal.close();
-    // Reset fields
-    titleField = "";
-    detailsField = "";
-    dateField = endOfToday();
+    resetFields();
   }
 
   export function isOpen(): boolean {
@@ -63,6 +60,12 @@
       date: dateField,
     });
     close();
+  }
+
+  function resetFields(): void {
+    titleField = "";
+    detailsField = "";
+    dateField = endOfToday();
   }
 </script>
 
