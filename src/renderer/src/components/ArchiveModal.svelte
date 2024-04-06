@@ -36,8 +36,7 @@
     <button
       class="btn btn-sm self-center"
       on:click={() => {
-        console.log($listIndex)
-        window.electron.ipcRenderer.send("clear:archive");
+        window.electron.ipcRenderer.send("clear:archive", $listIndex);
       }}>Clear</button
     >
   </div>
