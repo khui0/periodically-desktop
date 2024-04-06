@@ -5,6 +5,7 @@ export type { Task };
 
 const store = new Store({
   defaults: {
+    index: 0,
     lists: [
       {
         name: "Default",
@@ -101,6 +102,7 @@ export function getTasks(index: number): Task[] {
   const tasks: Task[] = lists[index]["tasks"];
   // Sort tasks by due date
   tasks.sort((a, b) => (a.timestamp > b.timestamp ? 1 : b.timestamp > a.timestamp ? -1 : 0));
+  setIndex(index);
   return tasks;
 }
 
@@ -149,4 +151,12 @@ export function clearArchive(index: number): void {
   lists[index]["archive"] = [];
   // Store lists
   store.set("lists", lists);
+}
+
+export function setIndex(index: number): void {
+  store.set("index", index);
+}
+
+export function getIndex(): number {
+  return store.get("index");
 }

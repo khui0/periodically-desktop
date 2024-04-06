@@ -11,6 +11,7 @@ import {
   deleteTask,
   editTask,
   getArchive,
+  getIndex,
   getLists,
   getTasks,
   moveTask,
@@ -82,6 +83,11 @@ app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     app.quit();
   }
+});
+
+ipcMain.on("setup", (event) => {
+  event.sender.send("res:lists", getLists());
+  event.sender.send("set:index", getIndex());
 });
 
 ipcMain.on("task:create", (event, index: number, arg) => {
