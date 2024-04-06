@@ -2,10 +2,11 @@
   import { onMount } from "svelte";
   import pluralize from "pluralize";
   import { endOfToday, getTime, timeToISO } from "./lib/time";
+  import { listIndex } from "./lib/stores";
 
   import List from "./components/List.svelte";
   import TaskModal from "./components/TaskModal.svelte";
-  import ListsModal from "./components/ListsModal.svelte";
+  import ListModal from "./components/ListModal.svelte";
   import ArchiveModal from "./components/ArchiveModal.svelte";
   import SettingsModal from "./components/SettingsModal.svelte";
 
@@ -17,7 +18,7 @@
   // Modals
   let createModal: TaskModal;
   let editModal: TaskModal;
-  let listsModal: ListsModal;
+  let listModal: ListModal;
   let archiveModal: ArchiveModal;
   let settingsModal: SettingsModal;
 
@@ -29,6 +30,7 @@
   }
 
   let lists: string[] = [];
+
   let tasks: Task[] = [];
   let archive: Task[] = [];
   let currentTime: string = getTime();
@@ -45,17 +47,20 @@
   let date: string;
   resetFields();
 
-  window.electron.ipcRenderer.send("req:lists");
+  $: $listIndex, refresh();
+
+  window.electron.ipcRenderer.on("set:index", (_event, response: number) => {
+    $listIndex = response;
+  });
+
   window.electron.ipcRenderer.on("res:lists", (_event, response: string[]) => {
     lists = response;
   });
 
-  window.electron.ipcRenderer.send("req:tasks");
   window.electron.ipcRenderer.on("res:tasks", (_event, response: Task[]) => {
     tasks = response;
   });
 
-  window.electron.ipcRenderer.send("req:archive");
   window.electron.ipcRenderer.on("res:archive", (_event, response: Task[]) => {
     archive = response;
   });
@@ -75,6 +80,12 @@
       }
     });
   });
+
+  function refresh(): void {
+    window.electron.ipcRenderer.send("req:lists");
+    window.electron.ipcRenderer.send("req:tasks", $listIndex);
+    window.electron.ipcRenderer.send("req:archive", $listIndex);
+  }
 
   function resetFields(): void {
     title = "";
@@ -118,12 +129,12 @@
   <div class="flex flex-row items-center justify-between text-2xl">
     <p>{pluralize("task", tasks.length, true)}</p>
     <div class="flex flex-row gap-2">
-      <select class="select select-bordered select-sm max-w-xs">
-        {#each lists as list, i (i)}
-          <option>{list}</option>
+      <select class="select select-bordered select-sm max-w-xs" bind:value={$listIndex}>
+        {#each lists as list, i}
+          <option value={i}>{list}</option>
         {/each}
       </select>
-      <button class="btn btn-sm btn-circle" on:click={listsModal.show}
+      <button class="btn btn-sm btn-circle" on:click={listModal.show}
         ><TablerDots></TablerDots></button
       >
     </div>
@@ -176,7 +187,7 @@
       editTask(task.uuid, task.title, task.details, task.date);
     }}
   ></TaskModal>
-  <ListsModal bind:this={listsModal}></ListsModal>
+  <ListModal bind:this={listModal}></ListModal>
   <ArchiveModal bind:this={archiveModal} tasks={archive}></ArchiveModal>
   <SettingsModal bind:this={settingsModal}></SettingsModal>
 </main>

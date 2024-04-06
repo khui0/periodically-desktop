@@ -115,3 +115,31 @@ export function getLists(): string[] {
   const lists: List[] = store.get("lists") as List[];
   return lists.map((list) => list.name);
 }
+
+export function createList(): number {
+  const lists: List[] = store.get("lists") as List[];
+
+  lists.push({
+    name: "New list",
+    tasks: [],
+    archive: [],
+  });
+  // Store lists
+  store.set("lists", lists);
+  return lists.length - 1;
+}
+
+export function deleteList(index: number): void {
+  const lists: List[] = store.get("lists") as List[];
+  lists.splice(index, 1);
+  // Store lists
+  store.set("lists", lists);
+}
+
+export function renameList(index: number, name: string): void {
+  const lists: List[] = store.get("lists") as List[];
+  if (lists.length < index) return;
+  lists[index]["name"] = name;
+  // Store lists
+  store.set("lists", lists);
+}

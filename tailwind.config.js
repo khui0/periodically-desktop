@@ -26,6 +26,7 @@ module.exports = {
           "base-300": "#303030",
           "base-content": "#ffffff",
           "error": "#f54c63",
+          "error-content": "#ffffff",
 
           "--rounded-box": "0.75rem",
           "--rounded-btn": "0.5rem",
