@@ -98,12 +98,12 @@ export function deleteTask(index: number, uuid: string, list: ListType = "tasks"
   store.set("lists", lists);
 }
 
-export function getTasks(index: number): Task[] {
+export function getTasks(index: number, applyIndex: boolean = true): Task[] {
   const lists: List[] = store.get("lists") as List[];
   const tasks: Task[] = lists[index]["tasks"];
   // Sort tasks by due date
   tasks.sort((a, b) => (a.timestamp > b.timestamp ? 1 : b.timestamp > a.timestamp ? -1 : 0));
-  setIndex(index);
+  applyIndex && setIndex(index);
   return tasks;
 }
 

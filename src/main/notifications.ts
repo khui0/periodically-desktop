@@ -39,7 +39,7 @@ function getTimetable(): Timetable {
   const timetable: Timetable = {};
   const listCount: number = getLists().length;
   for (let i = 0; i < listCount; i++) {
-    const tasks = getTasks(i);
+    const tasks = getTasks(i, false);
     for (let j = 0; j < tasks.length; j++) {
       const task = tasks[j];
       const rounding = 300_000;
