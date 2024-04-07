@@ -12,10 +12,12 @@
 
 <Modal title="Settings" bind:this={modal}>
   <div class="flex flex-col gap-2 max-h-[calc(100vh-10.25rem)]">
-    <div class="flex flex-col items-center">
+    <div class="form-control">
       <SettingsToggle id="dark-theme" value="dark" classes="theme-controller" toggled={true}
         >Dark theme</SettingsToggle
       >
+      <SettingsToggle id="enable-tray" toggled={true}>Close to tray</SettingsToggle>
+      <SettingsToggle id="notifications" toggled={true}>Task notifications</SettingsToggle>
     </div>
     <Versions></Versions>
   </div>

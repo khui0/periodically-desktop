@@ -162,10 +162,10 @@ export function getIndex(): number {
   return store.get("index");
 }
 
-export function settingsSet(id: string, value: string): void {
+export function setSetting(id: string, value: string): void {
   store.set(`settings.${id}`, value);
 }
 
-export function settingsGet(id: string, defaultValue: string): string {
+export function getSetting(id: string, defaultValue?: string): string {
   return store.get(`settings.${id}`, defaultValue);
 }

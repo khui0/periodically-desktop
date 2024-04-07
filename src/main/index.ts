@@ -16,8 +16,8 @@ import {
   getTasks,
   moveTask,
   renameList,
-  settingsGet,
-  settingsSet,
+  getSetting,
+  setSetting,
 } from "./data";
 
 let tray: Tray;
@@ -55,9 +55,17 @@ function createWindow(): void {
     mainWindow.loadFile(join(__dirname, "../renderer/index.html"));
   }
 
-  mainWindow.on("close", (event) => {
-    event.preventDefault();
-    mainWindow.hide();
+  tray = new Tray("./resources/icon.ico");
+  const contextMenu = Menu.buildFromTemplate([{ label: "Quit", type: "normal", role: "quit" }]);
+  tray.setToolTip("Periodically Desktop");
+  tray.setContextMenu(contextMenu);
+  tray.addListener("double-click", () => mainWindow.show());
+
+  mainWindow.on("close", (e) => {
+    if (mainWindow.isVisible() && getSetting("enable-tray") === "true") {
+      e.preventDefault();
+      mainWindow.hide();
+    }
   });
 }
 
@@ -78,25 +86,13 @@ app.whenReady().then(() => {
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
-
-  tray = new Tray("./resources/icon.ico");
-  const contextMenu = Menu.buildFromTemplate([
-    { label: "Quit", type: "normal", click: quitApplication },
-  ]);
-  tray.setToolTip("Periodically Desktop");
-  tray.setContextMenu(contextMenu);
-  tray.addListener("click", () => createWindow());
 });
 
-app.on("before-quit", () => {
-  tray.destroy();
-});
-
-function quitApplication(): void {
-  if (process.platform !== "darwin") {
+app.on("window-all-closed", () => {
+  if (process.platform !== "darwin" && getSetting("enable-tray") === "false") {
     app.quit();
   }
-}
+});
 
 ipcMain.on("setup", (event) => {
   event.sender.send("res:lists", getLists());
@@ -104,11 +100,11 @@ ipcMain.on("setup", (event) => {
 });
 
 ipcMain.on("settings:set", (_event, id: string, value: string) => {
-  settingsSet(id, value);
+  setSetting(id, value);
 });
 
 ipcMain.on("settings:get", (event, id: string, defaultValue: string) => {
-  const value = settingsGet(id, defaultValue);
+  const value = getSetting(id, defaultValue);
   event.sender.send(`settings:res-${id}`, value);
 });
 
