@@ -61,7 +61,7 @@ function createWindow(): void {
     mainWindow.loadFile(join(__dirname, "../renderer/index.html"));
   }
 
-  tray = new Tray("./resources/icon.ico");
+  tray = new Tray(icon);
   const contextMenu = Menu.buildFromTemplate([{ label: "Quit", type: "normal", role: "quit" }]);
   tray.setToolTip("Periodically Desktop");
   tray.setContextMenu(contextMenu);
