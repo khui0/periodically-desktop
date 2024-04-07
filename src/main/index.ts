@@ -1,7 +1,9 @@
-import { app, shell, BrowserWindow, ipcMain, Tray, Menu } from "electron";
+import { app, shell, BrowserWindow, ipcMain, Tray, Menu, Notification } from "electron";
 import { join } from "path";
 import { electronApp, optimizer, is } from "@electron-toolkit/utils";
 import icon from "../../resources/icon.ico?asset";
+
+import * as notifications from "./notifications";
 
 import {
   clearArchive,
@@ -22,6 +24,8 @@ import {
 
 let tray: Tray;
 
+let window: BrowserWindow;
+
 function createWindow(): void {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -37,6 +41,8 @@ function createWindow(): void {
       sandbox: false,
     },
   });
+
+  window = mainWindow;
 
   mainWindow.on("ready-to-show", () => {
     mainWindow.show();
@@ -62,6 +68,7 @@ function createWindow(): void {
   tray.addListener("double-click", () => mainWindow.show());
 
   mainWindow.on("close", (e) => {
+    // Hide window to tray
     if (mainWindow.isVisible() && getSetting("enable-tray") === "true") {
       e.preventDefault();
       mainWindow.hide();
@@ -94,13 +101,30 @@ app.on("window-all-closed", () => {
   }
 });
 
+export function notify(title: string, body: string): void {
+  const notification = new Notification({
+    title,
+    body,
+  });
+  notification.show();
+  notification.on("click", () => {
+    window.show();
+  });
+}
+
 ipcMain.on("setup", (event) => {
   event.sender.send("res:lists", getLists());
   event.sender.send("res:index", getIndex());
+  notifications.update();
 });
 
 ipcMain.on("settings:set", (_event, id: string, value: string) => {
   setSetting(id, value);
+  notifications.update();
+});
+
+ipcMain.on("notify", (_event, title: string, body: string) => {
+  notify(title, body);
 });
 
 ipcMain.on("settings:get", (event, id: string, defaultValue: string) => {
@@ -116,28 +140,33 @@ ipcMain.on("task:create", (event, index: number, arg) => {
   } else {
     event.sender.send("task:status", null);
   }
+  notifications.update();
 });
 
 ipcMain.on("task:edit", (event, index: number, arg) => {
   editTask(index, arg.uuid, arg.title, arg.details, arg.date);
   event.sender.send("res:tasks", getTasks(index));
+  notifications.update();
 });
 
 ipcMain.on("task:archive", (event, index: number, uuid: string) => {
   moveTask(index, uuid, "archive");
   event.sender.send("res:tasks", getTasks(index));
   event.sender.send("res:archive", getArchive(index));
+  notifications.update();
 });
 
 ipcMain.on("task:delete", (event, index: number, uuid: string) => {
   deleteTask(index, uuid, "tasks");
   event.sender.send("res:tasks", getTasks(index));
+  notifications.update();
 });
 
 ipcMain.on("archived:unarchive", (event, index: number, uuid: string) => {
   moveTask(index, uuid, "tasks");
   event.sender.send("res:tasks", getTasks(index));
   event.sender.send("res:archive", getArchive(index));
+  notifications.update();
 });
 
 ipcMain.on("archived:delete", (event, index: number, uuid: string) => {
