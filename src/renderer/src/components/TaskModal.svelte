@@ -1,11 +1,15 @@
 <script lang="ts">
+  import { listIndex } from "../lib/stores";
   import { createEventDispatcher, onMount } from "svelte";
   import Modal from "./Modal.svelte";
   import { endOfToday } from "../lib/time";
 
+  import TablerTrash from "~icons/tabler/trash";
+
   export let title: string;
   export let action: string = title;
   export let focus: boolean = true;
+  export let showDelete: boolean = false;
 
   export let titleField: string = "";
   export let detailsField: string = "";
@@ -62,6 +66,11 @@
     close();
   }
 
+  function deleteTask(): void {
+    window.electron.ipcRenderer.send("task:delete", $listIndex, taskUUID);
+    close();
+  }
+
   function resetFields(): void {
     titleField = "";
     detailsField = "";
@@ -89,6 +98,13 @@
       class="input input-bordered"
       bind:value={dateField}
     />
-    <button class="btn btn-primary btn-sm" on:click={dispatchAction}>{action}</button>
+    <div class="flex gap-2">
+      {#if showDelete}
+        <button class="btn hover:btn-error btn-sm btn-square" on:click={deleteTask}
+          ><TablerTrash></TablerTrash></button
+        >
+      {/if}
+      <button class="btn btn-primary btn-sm flex-1" on:click={dispatchAction}>{action}</button>
+    </div>
   </div>
 </Modal>

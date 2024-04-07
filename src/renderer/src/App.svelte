@@ -181,6 +181,7 @@
   ></TaskModal>
   <TaskModal
     title="Edit"
+    showDelete
     bind:this={editModal}
     on:action={(e) => {
       const task = e.detail;
