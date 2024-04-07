@@ -12,7 +12,6 @@ export function update(): void {
   if (enabled) {
     // Calculate timetable
     const timetable = getTimetable();
-    console.log(timetable);
     // Add notification timeouts
     Object.keys(timetable).forEach((timestamp) => {
       const tasks = timetable[timestamp];
