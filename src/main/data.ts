@@ -6,7 +6,7 @@ export type { Task };
 const store = new Store({
   defaults: {
     index: 0,
-    theme: "dark",
+    settings: {},
     lists: [
       {
         name: "Default",
@@ -162,10 +162,10 @@ export function getIndex(): number {
   return store.get("index");
 }
 
-export function getTheme(): string {
-  return store.get("theme");
+export function settingsSet(id: string, value: string): void {
+  store.set(`settings.${id}`, value);
 }
 
-export function setTheme(theme: string): void {
-  return store.set("theme", theme);
+export function settingsGet(id: string, defaultValue: string): string {
+  return store.get(`settings.${id}`, defaultValue);
 }

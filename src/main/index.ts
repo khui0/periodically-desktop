@@ -14,10 +14,10 @@ import {
   getIndex,
   getLists,
   getTasks,
-  getTheme,
   moveTask,
   renameList,
-  setTheme,
+  settingsGet,
+  settingsSet,
 } from "./data";
 
 let tray: Tray;
@@ -101,11 +101,15 @@ function quitApplication(): void {
 ipcMain.on("setup", (event) => {
   event.sender.send("res:lists", getLists());
   event.sender.send("res:index", getIndex());
-  event.sender.send("res:theme", getTheme());
 });
 
-ipcMain.on("theme:set", (_event, theme: string) => {
-  setTheme(theme);
+ipcMain.on("settings:set", (_event, id: string, value: string) => {
+  settingsSet(id, value);
+});
+
+ipcMain.on("settings:get", (event, id: string, defaultValue: string) => {
+  const value = settingsGet(id, defaultValue);
+  event.sender.send(`settings:res-${id}`, value);
 });
 
 ipcMain.on("task:create", (event, index: number, arg) => {
