@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, ipcMain } from "electron";
+import { app, shell, BrowserWindow, ipcMain, Tray, Menu } from "electron";
 import { join } from "path";
 import { electronApp, optimizer, is } from "@electron-toolkit/utils";
 import icon from "../../resources/icon.ico?asset";
@@ -19,6 +19,8 @@ import {
   renameList,
   setTheme,
 } from "./data";
+
+let tray: Tray;
 
 function createWindow(): void {
   // Create the browser window.
@@ -52,14 +54,15 @@ function createWindow(): void {
   } else {
     mainWindow.loadFile(join(__dirname, "../renderer/index.html"));
   }
+
+  mainWindow.on("close", (event) => {
+    event.preventDefault();
+    mainWindow.hide();
+  });
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-  // Set app user model id for windows
-  electronApp.setAppUserModelId("com.electron");
+  electronApp.setAppUserModelId("com.periodicallydesktop");
 
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.
@@ -75,16 +78,25 @@ app.whenReady().then(() => {
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
+
+  tray = new Tray("./resources/icon.ico");
+  const contextMenu = Menu.buildFromTemplate([
+    { label: "Quit", type: "normal", click: quitApplication },
+  ]);
+  tray.setToolTip("Periodically Desktop");
+  tray.setContextMenu(contextMenu);
+  tray.addListener("click", () => createWindow());
 });
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
-app.on("window-all-closed", () => {
+app.on("before-quit", () => {
+  tray.destroy();
+});
+
+function quitApplication(): void {
   if (process.platform !== "darwin") {
     app.quit();
   }
-});
+}
 
 ipcMain.on("setup", (event) => {
   event.sender.send("res:lists", getLists());
