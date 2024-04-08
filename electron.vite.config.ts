@@ -1,6 +1,7 @@
 import { defineConfig, externalizeDepsPlugin } from "electron-vite";
 import { svelte } from "@sveltejs/vite-plugin-svelte";
 import Icons from "unplugin-icons/vite";
+import version from "vite-plugin-package-version";
 
 export default defineConfig({
   main: {
@@ -15,6 +16,7 @@ export default defineConfig({
       Icons({
         compiler: "svelte",
       }),
+      version(),
     ],
   },
 });
