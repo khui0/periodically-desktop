@@ -1,9 +1,8 @@
-<p align="center">
-  <img width=128 src="https://github.com/khui0/periodically-desktop/assets/101839505/7a8440bc-0644-4d82-9fa9-7da3bef61b8c">
-</p>
+<img width=128 src="https://github.com/khui0/periodically-desktop/assets/101839505/7a8440bc-0644-4d82-9fa9-7da3bef61b8c">
 
+# Periodically Desktop
 
-<h1 align="center">Periodically Desktop</h1>
+![GitHub License](https://img.shields.io/github/license/khui0/periodically-desktop)
 
 Periodically is an automatically sorted to-do list
 
